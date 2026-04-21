@@ -6,13 +6,14 @@ info:
     
     Elle couvre les fonctionnalités suivantes :
     - **A** : Ouverture d'une nouvelle collectivité
-    - **B** : Admission et gestion des membres
+    - **B** : Admission et gestion des membres (mise à jour B-2 du 21 avril 2026)
     - **C** : Cotisations et paiements
     - **D** : Situation de trésorerie
     - **E** : Activités des collectivités et de la fédération
     - **F** : Assiduité des membres
-    - **G** : Statistiques
-  version: 1.0.0
+    - **G** : Statistiques d'une collectivité
+    - **H** : Statistiques de la fédération (ajout du 21 avril 2026)
+  version: 2.0.0
   contact:
     name: Fédération Agricole Madagascar
 
@@ -24,7 +25,7 @@ tags:
   - name: Collectivités
     description: Gestion des collectivités agricoles (Fonctionnalité A)
   - name: Membres
-    description: Admission et gestion des membres (Fonctionnalité B)
+    description: Admission et gestion des membres (Fonctionnalité B & B-2)
   - name: Cotisations
     description: Cotisations et paiements (Fonctionnalité C)
   - name: Trésorerie
@@ -33,8 +34,10 @@ tags:
     description: Activités des collectivités et de la fédération (Fonctionnalité E)
   - name: Assiduité
     description: Présences aux activités (Fonctionnalité F)
-  - name: Statistiques
-    description: Rapports et statistiques (Fonctionnalité G)
+  - name: Statistiques Collectivité
+    description: Rapports et statistiques par collectivité (Fonctionnalité G)
+  - name: Statistiques Fédération
+    description: Rapports et statistiques agrégés de la fédération (Fonctionnalité H)
 
 # PATHS
 paths:
@@ -82,7 +85,7 @@ paths:
         Soumet une demande d'ouverture d'une nouvelle collectivité à la fédération.
         
         Conditions requises :
-        - Au moins 10 membres avec une ancienneté ≥ 6 mois dans la fédération
+        - Au moins 10 membres dont 5 membres ayant une antériorité d'au moins 6 mois dans la fédération
         - Les postes spécifiques (président, président adjoint, trésorier, secrétaire) doivent être pourvus
         - L'autorisation formelle de la fédération sera délivrée après validation
       operationId: creerCollectivite
@@ -220,10 +223,20 @@ paths:
 
     post:
       tags: [Membres]
-      summary: Inscrire un nouveau membre dans la fédération
+      summary: Inscrire un nouveau membre dans une collectivité (B-2)
       description: |
-        Permet d'inscrire un nouveau membre dans la fédération. Un parrain (membre confirmé
-        avec ancienneté > 90 jours) est requis. Un frais d'adhésion de 50 000 MGA est obligatoire.
+        Permet d'inscrire un nouveau membre dans une collectivité.
+        
+        **Nouvelles conditions d'admission (B-2) en vigueur depuis le 21 avril 2026 :**
+        - Être parrainé par **au moins deux membres confirmés** de la fédération.
+        - Le nombre de parrains issus de la collectivité cible doit être **≥** au nombre de parrains issus d'autres collectivités.
+          - Ex. valide : 2 parrains de la collectivité cible (2 ≥ 0) ✓
+          - Ex. valide : 1 parrain de la collectivité cible + 1 parrain externe (1 ≥ 1) ✓
+          - Ex. valide : 3 parrains de la collectivité cible + 2 parrains externes (3 ≥ 2) ✓
+          - Ex. refusé : 0 parrain de la collectivité cible + 2 parrains externes (0 < 2) ✗
+        - Fournir ses informations personnelles, **incluant la nature de la relation avec chaque parrain** (famille, amis, collègues, etc.).
+        - Régler **50 000 MGA** de frais d'adhésion (mobile money ou virement bancaire).
+        - Régler **l'intégralité des cotisations annuelles obligatoires** de la collectivité cible.
       operationId: inscrireMembre
       requestBody:
         required: true
@@ -394,7 +407,144 @@ paths:
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
 
+  # A (suite) — MANDAT DE LA FÉDÉRATION
+
+  /federation/mandats:
+    get:
+      tags: [Collectivités]
+      summary: Lister les mandats de la fédération
+      description: |
+        Retourne l'historique des mandats de direction de la fédération.
+        Un mandat fédéral dure **2 ans** (contrairement aux collectivités : 1 an).
+      operationId: getMandatsFederation
+      parameters:
+        - name: annee
+          in: query
+          schema:
+            type: integer
+          description: Filtrer par année de début de mandat
+      responses:
+        '200':
+          description: Liste des mandats de la fédération
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MandatFederationListResponse'
+
+    post:
+      tags: [Collectivités]
+      summary: Créer un nouveau mandat pour la fédération
+      description: |
+        Enregistre les résultats du vote pour le nouveau mandat de direction de la fédération.
+        
+        Règles :
+        - Le président doit être, ou avoir été, président d'une collectivité.
+        - La durée du mandat est de **2 ans civils**.
+        - Chaque membre ne peut occuper un même poste fédéral plus de 2 fois.
+      operationId: creerMandatFederation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MandatFederationCreationRequest'
+      responses:
+        '201':
+          description: Mandat fédéral créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MandatFederationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /federation/mandats/{mandatId}:
+    get:
+      tags: [Collectivités]
+      summary: Détails d'un mandat de la fédération
+      operationId: getMandatFederationById
+      parameters:
+        - name: mandatId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Détails du mandat fédéral
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MandatFederationResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   # C - COTISATIONS
+
+  /collectivites/{collectiviteId}/cotisations-annuelles:
+    get:
+      tags: [Cotisations]
+      summary: Consulter le montant des cotisations annuelles obligatoires d'une collectivité
+      description: |
+        Retourne le montant des cotisations annuelles obligatoires fixé par la collectivité.
+        Ce montant est exigé intégralement lors de l'inscription d'un nouveau membre (B-2).
+      operationId: getCotisationsAnnuelles
+      parameters:
+        - $ref: '#/components/parameters/collectiviteId'
+      responses:
+        '200':
+          description: Montant des cotisations annuelles obligatoires
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CotisationsAnnuellesResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Cotisations]
+      summary: Définir ou mettre à jour le montant des cotisations annuelles obligatoires
+      description: |
+        Permet au trésorier (ou président) de définir le montant annuel obligatoire.
+        Ce montant s'applique lors des nouvelles inscriptions.
+      operationId: setCotisationsAnnuelles
+      parameters:
+        - $ref: '#/components/parameters/collectiviteId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [montant, annee]
+              properties:
+                montant:
+                  type: number
+                  format: double
+                  description: Montant annuel obligatoire en MGA
+                  example: 200000
+                annee:
+                  type: integer
+                  description: Année à laquelle s'applique ce montant
+                  example: 2026
+      responses:
+        '200':
+          description: Montant mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CotisationsAnnuellesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /collectivites/{collectiviteId}/cotisations:
     get:
@@ -780,6 +930,65 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /collectivites/{collectiviteId}/comptes/{compteId}/historique-soldes:
+    get:
+      tags: [Trésorerie]
+      summary: Consulter l'historique des soldes d'un compte
+      description: |
+        Retourne l'évolution du solde d'un compte à différentes dates.
+        Chaque collectivité doit être transparente envers ses membres et la fédération
+        de sa situation financière (section D).
+      operationId: getHistoriqueSoldesCompte
+      parameters:
+        - $ref: '#/components/parameters/collectiviteId'
+        - $ref: '#/components/parameters/compteId'
+        - name: dateDebut
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateFin
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Historique des soldes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoriqueSoldesResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /federation/comptes/{compteId}/historique-soldes:
+    get:
+      tags: [Trésorerie]
+      summary: Consulter l'historique des soldes d'un compte de la fédération
+      operationId: getHistoriqueSoldesCompteFederation
+      parameters:
+        - $ref: '#/components/parameters/compteId'
+        - name: dateDebut
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: dateFin
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Historique des soldes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoriqueSoldesResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   # E - ACTIVITÉS
 
   /collectivites/{collectiviteId}/activites:
@@ -1128,13 +1337,13 @@ paths:
         '400':
           $ref: '#/components/responses/BadRequest'
 
-  # G - STATISTIQUES
+  # G - STATISTIQUES COLLECTIVITÉ
 
   /collectivites/{collectiviteId}/statistiques/rapport-mensuel:
     get:
-      tags: [Statistiques]
-      summary: Rapport mensuel à soumettre à la fédération
-      description: Taux d'assiduité global et nombre de membres inscrits pour un mois donné.
+      tags: [Statistiques Collectivité]
+      summary: Calculer le rapport mensuel (vue interne)
+      description: Calcule à la demande le taux d'assiduité global et le nombre de membres inscrits pour un mois donné.
       operationId: getRapportMensuel
       parameters:
         - $ref: '#/components/parameters/collectiviteId'
@@ -1154,17 +1363,66 @@ paths:
             example: 4
       responses:
         '200':
-          description: Rapport mensuel
+          description: Rapport mensuel calculé
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RapportMensuelResponse'
+                $ref: '#/components/schemas/RapportMensuelCollectiviteResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
+    post:
+      tags: [Statistiques Collectivité]
+      summary: Soumettre le rapport mensuel à la fédération (G)
+      description: |
+        Le **président de la collectivité** soumet officiellement le rapport mensuel
+        à la fédération, conformément à l'obligation de reporting (section G).
+        
+        Ce rapport contient le taux d'assiduité global et le nombre de membres inscrits
+        pour le mois concerné.
+      operationId: soumettrerapportMensuel
+      parameters:
+        - $ref: '#/components/parameters/collectiviteId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [annee, mois]
+              properties:
+                annee:
+                  type: integer
+                  example: 2026
+                mois:
+                  type: integer
+                  minimum: 1
+                  maximum: 12
+                  example: 4
+                commentaire:
+                  type: string
+                  description: Commentaire optionnel du président accompagnant le rapport
+      responses:
+        '201':
+          description: Rapport mensuel soumis avec succès à la fédération
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RapportMensuelCollectiviteResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Un rapport a déjà été soumis pour ce mois
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /collectivites/{collectiviteId}/statistiques/membres:
     get:
-      tags: [Statistiques]
+      tags: [Statistiques Collectivité]
       summary: Statistiques détaillées par membre actif
       description: |
         Retourne pour chaque membre actif (non démissionnaire) :
@@ -1212,7 +1470,7 @@ paths:
 
   /collectivites/{collectiviteId}/statistiques/membres/{membreId}:
     get:
-      tags: [Statistiques]
+      tags: [Statistiques Collectivité]
       summary: Statistiques individuelles d'un membre actif
       operationId: getStatsMembre
       parameters:
@@ -1240,39 +1498,119 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /federation/statistiques/collectivites:
+  # H - STATISTIQUES FÉDÉRATION
+
+  /federation/statistiques/rapport-mensuel:
     get:
-      tags: [Statistiques]
-      summary: Vue globale des rapports mensuels de toutes les collectivités
-      operationId: getStatsCollectivites
+      tags: [Statistiques Fédération]
+      summary: Rapport mensuel global de la fédération (H)
+      description: |
+        Récapitule, pour toutes les collectivités, les indicateurs clés du mois demandé :
+        - Taux d'assiduité global par collectivité
+        - Pourcentage de membres à jour dans leur cotisation par collectivité
+        - Nombre de nouveaux adhérents par collectivité
+        
+        Ce rapport est établi mensuellement par le secrétaire de la fédération et présenté
+        en assemblée générale annuelle.
+      operationId: getRapportMensuelFederation
       parameters:
         - name: annee
           in: query
           required: true
           schema:
             type: integer
+            example: 2026
+          description: Année du rapport
         - name: mois
           in: query
+          required: true
           schema:
             type: integer
             minimum: 1
             maximum: 12
+            example: 4
+          description: Mois du rapport (1 = janvier, 12 = décembre)
       responses:
         '200':
-          description: Statistiques globales
+          description: Rapport mensuel global de la fédération
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  annee:
-                    type: integer
-                  mois:
-                    type: integer
-                  collectivites:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/RapportMensuelResponse'
+                $ref: '#/components/schemas/RapportMensuelFederationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /federation/statistiques/rapport-annuel:
+    get:
+      tags: [Statistiques Fédération]
+      summary: Rapport annuel global de la fédération (H)
+      description: |
+        Agrège les données sur l'ensemble de l'année pour toutes les collectivités.
+        Utilisé lors de l'assemblée générale annuelle pour identifier les collectivités
+        les plus méritantes et celles nécessitant un accompagnement.
+        
+        Indicateurs fournis par collectivité :
+        - Taux d'assiduité global annuel
+        - Pourcentage de membres à jour dans leurs cotisations sur l'année
+        - Nombre total de nouveaux adhérents sur l'année
+      operationId: getRapportAnnuelFederation
+      parameters:
+        - name: annee
+          in: query
+          required: true
+          schema:
+            type: integer
+            example: 2025
+          description: Année du rapport annuel
+      responses:
+        '200':
+          description: Rapport annuel global de la fédération
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RapportAnnuelFederationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /federation/statistiques/collectivites/{collectiviteId}:
+    get:
+      tags: [Statistiques Fédération]
+      summary: Détail des statistiques fédération pour une collectivité (H)
+      description: |
+        Retourne les statistiques agrégées d'une collectivité spécifique pour
+        la période demandée, telles que recensées par la fédération.
+      operationId: getStatsCollectiviteFederation
+      parameters:
+        - $ref: '#/components/parameters/collectiviteId'
+        - name: dateDebut
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Début de la période d'analyse
+        - name: dateFin
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Fin de la période d'analyse
+      responses:
+        '200':
+          description: Statistiques de la collectivité pour la période
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsCollectiviteFederationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
 # COMPONENTS
 components:
@@ -1533,36 +1871,100 @@ components:
           type: string
           format: email
 
+    # B-2 : Nouveau schema de parrain avec relation
+    ParrainAvecRelation:
+      type: object
+      required: [parrainId, relationAvecCandidat]
+      properties:
+        parrainId:
+          type: string
+          format: uuid
+          description: |
+            Identifiant du membre confirmé parrain.
+            Ce membre doit avoir le poste MEMBRE_CONFIRME au sein de la fédération.
+        relationAvecCandidat:
+          type: string
+          example: "famille"
+          description: |
+            Nature de la relation entre le parrain et le candidat
+            (ex. famille, ami, collègue, voisin, etc.)
+
     MembreInscriptionRequest:
       allOf:
         - $ref: '#/components/schemas/MembreBase'
         - type: object
-          required: [nom, prenom, dateNaissance, genre, adresse, metier, telephone, email, collectiviteId, parrainId, paiement]
+          required:
+            - nom
+            - prenom
+            - dateNaissance
+            - genre
+            - adresse
+            - metier
+            - telephone
+            - email
+            - collectiviteId
+            - parrains
+            - paiement
           properties:
             collectiviteId:
               type: string
               format: uuid
-            parrainId:
-              type: string
-              format: uuid
-              description: ID du membre confirmé parrain (ancienneté > 90 jours)
+              description: Identifiant de la collectivité dans laquelle le candidat postule
+            parrains:
+              type: array
+              minItems: 2
+              items:
+                $ref: '#/components/schemas/ParrainAvecRelation'
+              description: |
+                Liste des parrains (minimum 2 membres confirmés de la fédération).
+                
+                **Règle B-2** : Le nombre de parrains appartenant à la collectivité cible
+                doit être supérieur ou égal au nombre de parrains appartenant à d'autres
+                collectivités.
+                
+                Exemples valides :
+                - 2 parrains de la collectivité cible (2 ≥ 0) ✓
+                - 1 parrain cible + 1 parrain externe (1 ≥ 1) ✓
+                - 3 parrains cible + 2 parrains externes (3 ≥ 2) ✓
+                
+                Exemple refusé :
+                - 0 parrain cible + 2 parrains externes (0 < 2) ✗
             paiement:
-              $ref: '#/components/schemas/PaiementAdhesion'
+              $ref: '#/components/schemas/PaiementAdhesionComplet'
 
-    PaiementAdhesion:
+    # B-2 : Paiement d'adhésion étendu (frais + cotisations annuelles obligatoires)
+    PaiementAdhesionComplet:
       type: object
-      required: [modePaiement, montant]
+      required: [modePaiement, montantFraisAdhesion, montantCotisationsAnnuelles]
       properties:
-        montant:
-          type: number
-          format: double
-          default: 50000
-          description: Frais d'adhésion en MGA (50 000 MGA)
         modePaiement:
           type: string
           enum:
             - MOBILE_MONEY
             - VIREMENT_BANCAIRE
+          description: Seul le mobile money ou le virement bancaire est accepté
+        montantFraisAdhesion:
+          type: number
+          format: double
+          default: 50000
+          description: Frais d'adhésion fixes en MGA (50 000 MGA)
+          example: 50000
+        montantCotisationsAnnuelles:
+          type: number
+          format: double
+          description: |
+            Montant total des cotisations annuelles obligatoires de la collectivité cible,
+            à régler intégralement lors de l'inscription.
+            Ce montant est défini par la collectivité (ex. 200 000 MGA pour la collectivité n°1).
+          example: 200000
+        montantTotal:
+          type: number
+          format: double
+          readOnly: true
+          description: |
+            Montant total à régler = frais d'adhésion + cotisations annuelles obligatoires.
+            Calculé automatiquement par le serveur.
+          example: 250000
 
     MembreUpdateRequest:
       allOf:
@@ -1605,7 +2007,7 @@ components:
 
     PostesMandat:
       type: object
-      required: [presidentId, presidentAdjointId, tresorierld, secretaireId]
+      required: [presidentId, presidentAdjointId, tresorierId, secretaireId]
       properties:
         presidentId:
           type: string
@@ -1613,7 +2015,7 @@ components:
         presidentAdjointId:
           type: string
           format: uuid
-        tresorierld:
+        tresorierId:
           type: string
           format: uuid
         secretaireId:
@@ -1665,7 +2067,7 @@ components:
 
     CotisationCreationRequest:
       type: object
-      required: [membreId, type, montant, dateEncaissement, modePaiement]
+      required: [membreId, type, montant, dateEncaissement, modePaiement, compteID]
       properties:
         membreId:
           type: string
@@ -1681,6 +2083,10 @@ components:
           format: date
         modePaiement:
           $ref: '#/components/schemas/ModePaiement'
+        compteID:
+          type: string
+          format: uuid
+          description: Compte récepteur du paiement (caisse, bancaire ou mobile money). le mode de paiement doit être cohérent avec le type de compte (ex. MOBILE_MONEY → compte mobile money)
         motif:
           type: string
           description: Motif requis pour les cotisations ponctuelles
@@ -1753,7 +2159,7 @@ components:
         numeroBanque:
           type: string
           pattern: '^\d{5}\d{5}\d{11}\d{2}$'
-          description: "Format : BBBBBGGGGGCCCCCCCCCCCKKK (23 chiffres)"
+          description: "Format : BBBBBGGGGGCCCCCCCCCCCKK (23 chiffres)"
         nomTitulaireNumero:
           type: string
         serviceMobileMoney:
@@ -1823,6 +2229,11 @@ components:
         obligatoire:
           type: boolean
           default: false
+        reglePlanification:
+          type: string
+          nullable: true
+          description: Règle de récurrence annuelle pour les activités planifiées sur un même jour fixe chaque mois (ASSEMBLE_GENERALE et  FORMATION_JUNIOR). Null pour les activités EXCEPTIONNELLES ponctuelles
+          example: "Deuxième dimanche du mois"
 
     ActiviteCreationRequest:
       allOf:
@@ -1959,9 +2370,97 @@ components:
         totalExcuses:
           type: integer
 
-    # --- Statistiques ---
+    # --- Mandat Fédération ---
 
-    RapportMensuelResponse:
+    MandatFederationCreationRequest:
+      type: object
+      required: [anneeDebut, postes]
+      properties:
+        anneeDebut:
+          type: integer
+          description: Première année civile du mandat fédéral (dure 2 ans)
+          example: 2026
+        postes:
+          $ref: '#/components/schemas/PostesMandat'
+
+    MandatFederationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        anneeDebut:
+          type: integer
+          example: 2026
+        anneeFin:
+          type: integer
+          example: 2027
+          description: Calculé automatiquement (anneeDebut + 1)
+        postes:
+          $ref: '#/components/schemas/PostesMandat'
+        dateDebut:
+          type: string
+          format: date
+        dateFin:
+          type: string
+          format: date
+
+    MandatFederationListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/MandatFederationResponse'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    # --- Cotisations annuelles obligatoires ---
+
+    CotisationsAnnuellesResponse:
+      type: object
+      properties:
+        collectiviteId:
+          type: string
+          format: uuid
+        annee:
+          type: integer
+          example: 2026
+        montant:
+          type: number
+          format: double
+          description: Montant annuel obligatoire en MGA
+          example: 200000
+
+    # --- Historique soldes ---
+
+    EntreeSolde:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        solde:
+          type: number
+          format: double
+          description: Solde en MGA à cette date
+
+    HistoriqueSoldesResponse:
+      type: object
+      properties:
+        compteId:
+          type: string
+          format: uuid
+        typeCompte:
+          $ref: '#/components/schemas/TypeCompte'
+        historique:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntreeSolde'
+
+    # --- Statistiques Collectivité (G) ---
+
+    RapportMensuelCollectiviteResponse:
       type: object
       properties:
         collectiviteId:
@@ -2024,6 +2523,84 @@ components:
             $ref: '#/components/schemas/StatsMembreResponse'
         pagination:
           $ref: '#/components/schemas/Pagination'
+
+    # --- Statistiques Fédération (H) ---
+
+    StatsCollectiviteFederationResponse:
+      type: object
+      description: Statistiques agrégées d'une collectivité telles que recensées par la fédération
+      properties:
+        collectiviteId:
+          type: string
+          format: uuid
+        collectiviteNom:
+          type: string
+        dateDebut:
+          type: string
+          format: date
+        dateFin:
+          type: string
+          format: date
+        tauxAssiduite:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: Taux d'assiduité global de la collectivité sur la période (%)
+          example: 78.3
+        pourcentageMembresAJour:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          description: |
+            Pourcentage de membres actifs à jour dans leur cotisation sur la période (%).
+            Un membre est considéré "à jour" s'il n'a aucun montant impayé sur la période.
+          example: 91.2
+        nombreNouveauxAdherents:
+          type: integer
+          minimum: 0
+          description: Nombre de nouveaux membres admis dans la collectivité sur la période
+          example: 12
+
+    RapportMensuelFederationResponse:
+      type: object
+      description: Rapport mensuel global établi par le secrétaire de la fédération
+      properties:
+        annee:
+          type: integer
+          example: 2026
+        mois:
+          type: integer
+          minimum: 1
+          maximum: 12
+          example: 4
+        nombreCollectivites:
+          type: integer
+          description: Nombre total de collectivités recensées dans ce rapport
+        collectivites:
+          type: array
+          description: Liste des statistiques par collectivité pour le mois
+          items:
+            $ref: '#/components/schemas/StatsCollectiviteFederationResponse'
+
+    RapportAnnuelFederationResponse:
+      type: object
+      description: Rapport annuel global de la fédération, présenté en assemblée générale
+      properties:
+        annee:
+          type: integer
+          example: 2025
+        nombreCollectivites:
+          type: integer
+          description: Nombre total de collectivités recensées dans ce rapport
+        collectivites:
+          type: array
+          description: |
+            Liste des statistiques annuelles par collectivité.
+            Permet d'identifier les collectivités les plus méritantes et celles à accompagner.
+          items:
+            $ref: '#/components/schemas/StatsCollectiviteFederationResponse'
 
     # --- Génériques ---
 
