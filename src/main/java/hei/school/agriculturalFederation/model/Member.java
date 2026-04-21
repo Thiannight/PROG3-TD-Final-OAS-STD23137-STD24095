@@ -14,9 +14,9 @@ public class Member {
     private String phoneNumber;
     private String email;
     private MemberOccupation occupation;
-    private LocalDate membershipDate; // date d'adhésion
+    private LocalDate membershipDate;
     private String collectivityId;
-    private List<Member> referees; // parrains (objets complets dans la réponse)
+    private List<Member> referees;
 
     public Member() {}
 
