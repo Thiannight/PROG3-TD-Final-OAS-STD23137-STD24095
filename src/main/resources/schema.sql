@@ -23,7 +23,7 @@ CREATE TABLE member (
     gender gender_enum NOT NULL,
     address VARCHAR(255) NOT NULL,
     profession VARCHAR(255) NOT NULL,
-    phone_number INTEGER NOT NULL,
+    phone_number BIGINT NOT NULL,
     email VARCHAR(255) NOT NULL,
     adhesion_date DATE NOT NULL,
     occupation occupation_enum NOT NULL,
@@ -39,10 +39,12 @@ ALTER TABLE collectivity
     ADD CONSTRAINT fk_secretary FOREIGN KEY (secretary_id) REFERENCES member(id);
 
 CREATE TABLE sponsorship (
-    candidate_id VARCHAR(255) NOT NULL,
-    sponsor_id VARCHAR(255) NOT NULL,
-    relationship_nature VARCHAR(255) NOT NULL,
-    PRIMARY KEY (candidate_id, sponsor_id),
-    FOREIGN KEY (candidate_id) REFERENCES member(id),
-    FOREIGN KEY (sponsor_id) REFERENCES member(id)
+     candidate_id VARCHAR(255) NOT NULL,
+     sponsor_id VARCHAR(255) NOT NULL,
+     relationship_nature VARCHAR(255) NOT NULL,
+     PRIMARY KEY (candidate_id, sponsor_id),
+     FOREIGN KEY (candidate_id) REFERENCES member(id),
+     FOREIGN KEY (sponsor_id) REFERENCES member(id)
 );
+
+ALTER TABLE collectivity ADD COLUMN annual_dues BIGINT NOT NULL DEFAULT 0;
