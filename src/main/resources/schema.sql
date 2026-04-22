@@ -48,3 +48,67 @@ CREATE TABLE sponsorship (
     FOREIGN KEY (candidate_id) REFERENCES member(id),
     FOREIGN KEY (sponsor_id)   REFERENCES member(id)
 );
+
+--
+CREATE TYPE frequency_enum AS ENUM ('WEEKLY', 'MONTHLY', 'ANNUALLY', 'PUNCTUALLY');
+CREATE TYPE activity_status_enum AS ENUM ('ACTIVE', 'INACTIVE');
+CREATE TYPE payment_mode_enum AS ENUM ('CASH', 'MOBILE_BANKING', 'BANK_TRANSFER');
+CREATE TYPE mobile_banking_service_enum AS ENUM ('AIRTEL_MONEY', 'MVOLA', 'ORANGE_MONEY');
+CREATE TYPE bank_enum AS ENUM ('BRED', 'MCB', 'BMOI', 'BOA', 'BGFI', 'AFG', 'ACCES_BAQUE', 'BAOBAB', 'SIPEM');
+
+CREATE TABLE cash_account (
+    id     VARCHAR(255) PRIMARY KEY,
+    amount DOUBLE PRECISION NOT NULL DEFAULT 0
+);
+
+CREATE TABLE mobile_banking_account (
+    id                     VARCHAR(255) PRIMARY KEY,
+    holder_name            VARCHAR(255) NOT NULL,
+    mobile_banking_service mobile_banking_service_enum NOT NULL,
+    mobile_number          BIGINT NOT NULL,
+    amount                 DOUBLE PRECISION NOT NULL DEFAULT 0
+);
+
+CREATE TABLE bank_account (
+    id                  VARCHAR(255) PRIMARY KEY,
+    holder_name         VARCHAR(255) NOT NULL,
+    bank_name           bank_enum NOT NULL,
+    bank_code           INT NOT NULL,
+    bank_branch_code    INT NOT NULL,
+    bank_account_number INT NOT NULL,
+    bank_account_key    INT NOT NULL,
+    amount              DOUBLE PRECISION NOT NULL DEFAULT 0
+);
+
+CREATE TABLE membership_fee (
+    id               VARCHAR(255) PRIMARY KEY,
+    collectivity_id  VARCHAR(255) NOT NULL,
+    eligible_from    DATE NOT NULL,
+    frequency        frequency_enum NOT NULL,
+    amount           DOUBLE PRECISION NOT NULL,
+    label            VARCHAR(255),
+    status           activity_status_enum NOT NULL DEFAULT 'ACTIVE',
+    FOREIGN KEY (collectivity_id) REFERENCES collectivity(id)
+);
+
+CREATE TABLE collectivity_transaction (
+    id                  VARCHAR(255) PRIMARY KEY,
+    collectivity_id     VARCHAR(255) NOT NULL,
+    creation_date       DATE NOT NULL,
+    amount              DOUBLE PRECISION NOT NULL,
+    payment_mode        payment_mode_enum NOT NULL,
+    account_credited_id VARCHAR(255) NOT NULL,
+    member_debited_id   VARCHAR(255) NOT NULL,
+    FOREIGN KEY (collectivity_id)   REFERENCES collectivity(id),
+    FOREIGN KEY (member_debited_id) REFERENCES member(id)
+);
+
+CREATE TABLE member_payment (
+    id                  VARCHAR(255) PRIMARY KEY,
+    member_id           VARCHAR(255) NOT NULL,
+    amount              BIGINT NOT NULL,
+    payment_mode        payment_mode_enum NOT NULL,
+    account_credited_id VARCHAR(255) NOT NULL,
+    creation_date       DATE NOT NULL,
+    FOREIGN KEY (member_id) REFERENCES member(id)
+);
