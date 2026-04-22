@@ -1,9 +1,9 @@
 package hei.school.agriculturalFederation.repository;
 
+import hei.school.agriculturalFederation.datasource.DataSourceConfig;
 import hei.school.agriculturalFederation.model.*;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -12,29 +12,29 @@ import java.util.Optional;
 @Repository
 public class CollectivityRepository {
 
-    private final DataSource dataSource;
+    private final DataSourceConfig dataSourceConfig;
     private final MemberRepository memberRepository;
 
-    public CollectivityRepository(DataSource dataSource, MemberRepository memberRepository) {
-        this.dataSource = dataSource;
+    public CollectivityRepository(DataSourceConfig dataSourceConfig, MemberRepository memberRepository) {
+        this.dataSourceConfig = dataSourceConfig;
         this.memberRepository = memberRepository;
     }
 
     public boolean existsById(String id) {
-        String sql = "SELECT 1 FROM collectivity WHERE id = ?";
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM collectivity WHERE id = ?")) {
             ps.setString(1, id);
             return ps.executeQuery().next();
         } catch (SQLException e) {
             throw new RuntimeException("Error in existsById collectivity: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
         }
     }
 
     public Optional<Collectivity> findById(String id) {
-        String sql = "SELECT * FROM collectivity WHERE id = ?";
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM collectivity WHERE id = ?")) {
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -43,6 +43,8 @@ public class CollectivityRepository {
             return Optional.empty();
         } catch (SQLException e) {
             throw new RuntimeException("Error in findById collectivity: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
         }
     }
 
@@ -52,10 +54,10 @@ public class CollectivityRepository {
         c.setLocation(rs.getString("location"));
 
         CollectivityStructure structure = new CollectivityStructure();
-        String presidentId      = rs.getString("president_id");
-        String vicePresidentId  = rs.getString("vice_president_id");
-        String treasurerId      = rs.getString("treasurer_id");
-        String secretaryId      = rs.getString("secretary_id");
+        String presidentId     = rs.getString("president_id");
+        String vicePresidentId = rs.getString("vice_president_id");
+        String treasurerId     = rs.getString("treasurer_id");
+        String secretaryId     = rs.getString("secretary_id");
 
         if (presidentId != null)
             memberRepository.findById(presidentId).ifPresent(structure::setPresident);
@@ -84,8 +86,8 @@ public class CollectivityRepository {
                    federation_approval, president_id, vice_president_id, treasurer_id, secretary_id)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
             ps.setString(2, "Collectivity-" + id);
             ps.setString(3, location);
@@ -99,14 +101,16 @@ public class CollectivityRepository {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error in save collectivity: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
         }
         return findById(id).orElseThrow();
     }
 
     public void updateMemberCollectivity(List<String> memberIds, String collectivityId) {
-        String sql = "UPDATE member SET collectivity_id = ? WHERE id = ?";
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE member SET collectivity_id = ? WHERE id = ?")) {
             for (String memberId : memberIds) {
                 ps.setString(1, collectivityId);
                 ps.setString(2, memberId);
@@ -115,6 +119,8 @@ public class CollectivityRepository {
             ps.executeBatch();
         } catch (SQLException e) {
             throw new RuntimeException("Error in updateMemberCollectivity: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
         }
     }
 }
