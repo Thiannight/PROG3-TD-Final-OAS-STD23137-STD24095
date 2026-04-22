@@ -1,5 +1,6 @@
 package hei.school.agriculturalFederation.controller;
 
+import hei.school.agriculturalFederation.model.AssignCollectivityIdentity;
 import hei.school.agriculturalFederation.model.Collectivity;
 import hei.school.agriculturalFederation.model.CreateCollectivity;
 import hei.school.agriculturalFederation.service.CollectivityService;
@@ -22,5 +23,13 @@ public class CollectivityController {
     @ResponseStatus(HttpStatus.CREATED)
     public List<Collectivity> createCollectivities(@RequestBody List<CreateCollectivity> collectivities) {
         return collectivityService.createCollectivities(collectivities);
+    }
+
+    @PatchMapping("/{collectivityId}/identity")
+    @ResponseStatus(HttpStatus.OK)
+    public Collectivity assignIdentity(
+            @PathVariable String collectivityId,
+            @RequestBody AssignCollectivityIdentity request) {
+        return collectivityService.assignIdentity(collectivityId, request);
     }
 }

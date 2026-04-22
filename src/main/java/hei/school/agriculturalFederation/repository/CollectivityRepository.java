@@ -48,9 +48,67 @@ public class CollectivityRepository {
         }
     }
 
+    public boolean nameExistsForOther(String name, String excludeId) {
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT 1 FROM collectivity WHERE name = ? AND id != ?")) {
+            ps.setString(1, name);
+            ps.setString(2, excludeId);
+            return ps.executeQuery().next();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error in nameExistsForOther: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
+    }
+
+    public boolean numberExistsForOther(String number, String excludeId) {
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT 1 FROM collectivity WHERE number = ? AND id != ?")) {
+            ps.setString(1, number);
+            ps.setString(2, excludeId);
+            return ps.executeQuery().next();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error in numberExistsForOther: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
+    }
+
+    public Collectivity assignIdentity(String collectivityId, String number, String name) {
+        StringBuilder sql = new StringBuilder("UPDATE collectivity SET ");
+        boolean first = true;
+        if (number != null) {
+            sql.append("number = ?");
+            first = false;
+        }
+        if (name != null) {
+            if (!first) sql.append(", ");
+            sql.append("name = ?");
+        }
+        sql.append(" WHERE id = ?");
+
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int idx = 1;
+            if (number != null) ps.setString(idx++, number);
+            if (name != null)   ps.setString(idx++, name);
+            ps.setString(idx, collectivityId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error in assignIdentity: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
+        return findById(collectivityId).orElseThrow();
+    }
+
     private Collectivity mapRow(ResultSet rs) throws SQLException {
         Collectivity c = new Collectivity();
         c.setId(rs.getString("id"));
+        c.setNumber(rs.getString("number"));   // nullable
+        c.setName(rs.getString("name"));       // nullable
         c.setLocation(rs.getString("location"));
 
         CollectivityStructure structure = new CollectivityStructure();
@@ -82,22 +140,21 @@ public class CollectivityRepository {
                              String secretaryId) {
         String sql = """
                 INSERT INTO collectivity
-                  (id, name, location, agricultural_specialty, creation_date,
+                  (id, number, name, location, agricultural_specialty, creation_date,
                    federation_approval, president_id, vice_president_id, treasurer_id, secretary_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         Connection conn = dataSourceConfig.getConnection();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
-            ps.setString(2, "Collectivity-" + id);
-            ps.setString(3, location);
-            ps.setString(4, "Not defined");
-            ps.setDate(5, Date.valueOf(LocalDate.now()));
-            ps.setBoolean(6, federationApproval);
-            ps.setString(7, presidentId);
-            ps.setString(8, vicePresidentId);
-            ps.setString(9, treasurerId);
-            ps.setString(10, secretaryId);
+            ps.setString(2, location);
+            ps.setString(3, "Not defined");
+            ps.setDate(4, Date.valueOf(LocalDate.now()));
+            ps.setBoolean(5, federationApproval);
+            ps.setString(6, presidentId);
+            ps.setString(7, vicePresidentId);
+            ps.setString(8, treasurerId);
+            ps.setString(9, secretaryId);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Error in save collectivity: " + e.getMessage(), e);
