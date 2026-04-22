@@ -1,4 +1,14 @@
 package hei.school.agriculturalFederation.model;
 
 public class AssignCollectivityIdentity {
+    private String number;
+    private String name;
+
+    public AssignCollectivityIdentity() {}
+
+    public String getNumber() { return number; }
+    public void setNumber(String number) { this.number = number; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 }
