@@ -8,6 +8,7 @@ CREATE TABLE collectivity (
     agricultural_specialty VARCHAR(255) NOT NULL,
     creation_date DATE NOT NULL,
     federation_approval BOOLEAN DEFAULT FALSE,
+    annual_dues BIGINT NOT NULL DEFAULT 0,
     president_id VARCHAR(255),
     vice_president_id VARCHAR(255),
     treasurer_id VARCHAR(255),
@@ -39,12 +40,10 @@ ALTER TABLE collectivity
     ADD CONSTRAINT fk_secretary FOREIGN KEY (secretary_id) REFERENCES member(id);
 
 CREATE TABLE sponsorship (
-     candidate_id VARCHAR(255) NOT NULL,
-     sponsor_id VARCHAR(255) NOT NULL,
-     relationship_nature VARCHAR(255) NOT NULL,
-     PRIMARY KEY (candidate_id, sponsor_id),
-     FOREIGN KEY (candidate_id) REFERENCES member(id),
-     FOREIGN KEY (sponsor_id) REFERENCES member(id)
+    candidate_id VARCHAR(255) NOT NULL,
+    sponsor_id VARCHAR(255) NOT NULL,
+    relationship_nature VARCHAR(255) NOT NULL,
+    PRIMARY KEY (candidate_id, sponsor_id),
+    FOREIGN KEY (candidate_id) REFERENCES member(id),
+    FOREIGN KEY (sponsor_id) REFERENCES member(id)
 );
-
-ALTER TABLE collectivity ADD COLUMN annual_dues BIGINT NOT NULL DEFAULT 0;
