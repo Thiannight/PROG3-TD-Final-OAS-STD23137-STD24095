@@ -1,7 +1,6 @@
 package hei.school.agriculturalFederation.service;
 
 import hei.school.agriculturalFederation.exception.BadRequestException;
-import hei.school.agriculturalFederation.exception.ConflictException;
 import hei.school.agriculturalFederation.exception.NotFoundException;
 import hei.school.agriculturalFederation.model.*;
 import hei.school.agriculturalFederation.repository.CollectivityRepository;
@@ -32,12 +31,10 @@ public class CollectivityService {
     }
 
     private Collectivity createOne(CreateCollectivity req) {
-
         if (!req.isFederationApproval()) {
             throw new BadRequestException(
                     "Formal federation approval is required to open a collectivity.");
         }
-
         if (req.getStructure() == null) {
             throw new BadRequestException(
                     "The structure (president, vice president, treasurer, secretary) is mandatory.");
@@ -103,8 +100,7 @@ public class CollectivityService {
         return collectivity;
     }
 
-    public Collectivity assignIdentity(String collectivityId, AssignCollectivityIdentity request) {
-
+    public Collectivity updateInformations(String collectivityId, CollectivityInformation request) {
         if (request.getNumber() == null && request.getName() == null) {
             throw new BadRequestException(
                     "At least one of 'number' or 'name' must be provided.");
@@ -114,31 +110,19 @@ public class CollectivityService {
                 .orElseThrow(() -> new NotFoundException(
                         "Collectivity not found: " + collectivityId));
 
-        if (request.getNumber() != null && existing.getNumber() != null) {
-            throw new ConflictException(
-                    "The number '" + existing.getNumber()
-                            + "' has already been assigned to this collectivity and cannot be changed.");
-        }
-        if (request.getName() != null && existing.getName() != null) {
-            throw new ConflictException(
-                    "The name '" + existing.getName()
-                            + "' has already been assigned to this collectivity and cannot be changed.");
-        }
+        String numberStr = request.getNumber() != null ? String.valueOf(request.getNumber()) : null;
 
-        if (request.getNumber() != null
-                && collectivityRepository.numberExistsForOther(request.getNumber(), collectivityId)) {
+        if (numberStr != null
+                && collectivityRepository.numberExistsForOther(numberStr, collectivityId)) {
             throw new BadRequestException(
-                    "The number '" + request.getNumber()
-                            + "' is already used by another collectivity.");
+                    "The number '" + numberStr + "' is already used by another collectivity.");
         }
         if (request.getName() != null
                 && collectivityRepository.nameExistsForOther(request.getName(), collectivityId)) {
             throw new BadRequestException(
-                    "The name '" + request.getName()
-                            + "' is already used by another collectivity.");
+                    "The name '" + request.getName() + "' is already used by another collectivity.");
         }
 
-        return collectivityRepository.assignIdentity(
-                collectivityId, request.getNumber(), request.getName());
+        return collectivityRepository.assignIdentity(collectivityId, numberStr, request.getName());
     }
 }
