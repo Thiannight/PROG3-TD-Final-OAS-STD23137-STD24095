@@ -3,7 +3,8 @@ CREATE TYPE occupation_enum AS ENUM ('JUNIOR', 'SENIOR', 'SECRETARY', 'TREASURER
 
 CREATE TABLE collectivity (
     id VARCHAR(255) PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL,
+    number VARCHAR(255) UNIQUE,
+    name   VARCHAR(255) UNIQUE,
     location VARCHAR(255) NOT NULL,
     agricultural_specialty VARCHAR(255) NOT NULL,
     creation_date DATE NOT NULL,
@@ -34,16 +35,16 @@ CREATE TABLE member (
 );
 
 ALTER TABLE collectivity
-    ADD CONSTRAINT fk_president FOREIGN KEY (president_id) REFERENCES member(id),
+    ADD CONSTRAINT fk_president      FOREIGN KEY (president_id)      REFERENCES member(id),
     ADD CONSTRAINT fk_vice_president FOREIGN KEY (vice_president_id) REFERENCES member(id),
-    ADD CONSTRAINT fk_treasurer FOREIGN KEY (treasurer_id) REFERENCES member(id),
-    ADD CONSTRAINT fk_secretary FOREIGN KEY (secretary_id) REFERENCES member(id);
+    ADD CONSTRAINT fk_treasurer      FOREIGN KEY (treasurer_id)      REFERENCES member(id),
+    ADD CONSTRAINT fk_secretary      FOREIGN KEY (secretary_id)      REFERENCES member(id);
 
 CREATE TABLE sponsorship (
     candidate_id VARCHAR(255) NOT NULL,
-    sponsor_id VARCHAR(255) NOT NULL,
+    sponsor_id   VARCHAR(255) NOT NULL,
     relationship_nature VARCHAR(255) NOT NULL,
     PRIMARY KEY (candidate_id, sponsor_id),
     FOREIGN KEY (candidate_id) REFERENCES member(id),
-    FOREIGN KEY (sponsor_id) REFERENCES member(id)
+    FOREIGN KEY (sponsor_id)   REFERENCES member(id)
 );

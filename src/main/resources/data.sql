@@ -1,9 +1,9 @@
-INSERT INTO collectivity (id, name, location, agricultural_specialty, creation_date, federation_approval,
-                          president_id, vice_president_id, treasurer_id, secretary_id)
+INSERT INTO collectivity (id, number, name, location, agricultural_specialty, creation_date, federation_approval,
+                          annual_dues, president_id, vice_president_id, treasurer_id, secretary_id)
 VALUES
-    ('COL-001', 'Ny Tantsaha Malagasy', 'Antananarivo', 'Riziculture',        '2022-01-15', TRUE,  NULL, NULL, NULL, NULL),
-    ('COL-002', 'Vokatra Tsara',        'Fianarantsoa',  'Maraîchage',         '2022-06-10', TRUE,  NULL, NULL, NULL, NULL),
-    ('COL-003', 'Harena Voajanahary',   'Toamasina',     'Culture de vanille', '2023-03-20', TRUE,  NULL, NULL, NULL, NULL);
+    ('COL-001', 'COL-001', 'Ny Tantsaha Malagasy', 'Antananarivo', 'Riziculture',        '2022-01-15', TRUE, 200000, NULL, NULL, NULL, NULL),
+    ('COL-002', 'COL-002', 'Vokatra Tsara',        'Fianarantsoa',  'Maraîchage',         '2022-06-10', TRUE, 150000, NULL, NULL, NULL, NULL),
+    ('COL-003', 'COL-003', 'Harena Voajanahary',   'Toamasina',     'Culture de vanille', '2023-03-20', TRUE, 180000, NULL, NULL, NULL, NULL);
 
 INSERT INTO member (id, collectivity_id, first_name, last_name, birth_date, gender, address, profession,
                     phone_number, email, adhesion_date, occupation, registration_fee_paid, membership_dues_paid)
@@ -45,55 +45,15 @@ VALUES
     ('MEM-033', 'COL-003', 'Rindra',    'Rakotozafy',     '2000-03-16', 'FEMALE', '25 Cité Tanambao, Toamasina',        'Étudiante',    340003010, 'rindra.rakotozafy@email.mg',    '2023-06-01', 'JUNIOR',         TRUE, TRUE),
     ('MEM-034', 'COL-003', 'Arj',       'Andriamandroso', '2002-07-09', 'MALE',   '7 Rue du Progrès, Toamasina',        'Étudiant',     340003011, 'arj.andriamandroso@email.mg',   '2023-07-15', 'JUNIOR',         TRUE, TRUE);
 
-UPDATE collectivity SET
-                        president_id      = 'MEM-001',
-                        vice_president_id = 'MEM-002',
-                        treasurer_id      = 'MEM-003',
-                        secretary_id      = 'MEM-004'
-WHERE id = 'COL-001';
-
-UPDATE collectivity SET
-                        president_id      = 'MEM-013',
-                        vice_president_id = 'MEM-014',
-                        treasurer_id      = 'MEM-015',
-                        secretary_id      = 'MEM-016'
-WHERE id = 'COL-002';
-
-UPDATE collectivity SET
-                        president_id      = 'MEM-024',
-                        vice_president_id = 'MEM-025',
-                        treasurer_id      = 'MEM-026',
-                        secretary_id      = 'MEM-027'
-WHERE id = 'COL-003';
+UPDATE collectivity SET president_id = 'MEM-001', vice_president_id = 'MEM-002', treasurer_id = 'MEM-003', secretary_id = 'MEM-004' WHERE id = 'COL-001';
+UPDATE collectivity SET president_id = 'MEM-013', vice_president_id = 'MEM-014', treasurer_id = 'MEM-015', secretary_id = 'MEM-016' WHERE id = 'COL-002';
+UPDATE collectivity SET president_id = 'MEM-024', vice_president_id = 'MEM-025', treasurer_id = 'MEM-026', secretary_id = 'MEM-027' WHERE id = 'COL-003';
 
 INSERT INTO sponsorship (candidate_id, sponsor_id, relationship_nature) VALUES
-    ('MEM-010', 'MEM-005', 'Collègues'),
-    ('MEM-010', 'MEM-006', 'Amis');
-
-INSERT INTO sponsorship (candidate_id, sponsor_id, relationship_nature) VALUES
-    ('MEM-011', 'MEM-007', 'Famille'),
-    ('MEM-011', 'MEM-017', 'Collègues');
-
-INSERT INTO sponsorship (candidate_id, sponsor_id, relationship_nature) VALUES
-    ('MEM-012', 'MEM-008', 'Voisins'),
-    ('MEM-012', 'MEM-009', 'Amis');
-
-INSERT INTO sponsorship (candidate_id, sponsor_id, relationship_nature) VALUES
-    ('MEM-022', 'MEM-017', 'Amis'),
-    ('MEM-022', 'MEM-018', 'Famille');
-
-INSERT INTO sponsorship (candidate_id, sponsor_id, relationship_nature) VALUES
-    ('MEM-023', 'MEM-019', 'Collègues'),
-    ('MEM-023', 'MEM-020', 'Amis');
-
-INSERT INTO sponsorship (candidate_id, sponsor_id, relationship_nature) VALUES
-    ('MEM-033', 'MEM-028', 'Voisins'),
-    ('MEM-033', 'MEM-029', 'Amis');
-
-INSERT INTO sponsorship (candidate_id, sponsor_id, relationship_nature) VALUES
-    ('MEM-034', 'MEM-030', 'Famille'),
-    ('MEM-034', 'MEM-031', 'Voisins');
-
-UPDATE collectivity SET annual_dues = 200000 WHERE id = 'COL-001';
-UPDATE collectivity SET annual_dues = 150000 WHERE id = 'COL-002';
-UPDATE collectivity SET annual_dues = 180000 WHERE id = 'COL-003';
+    ('MEM-010', 'MEM-005', 'Collègues'), ('MEM-010', 'MEM-006', 'Amis'),
+    ('MEM-011', 'MEM-007', 'Famille'),   ('MEM-011', 'MEM-017', 'Collègues'),
+    ('MEM-012', 'MEM-008', 'Voisins'),   ('MEM-012', 'MEM-009', 'Amis'),
+    ('MEM-022', 'MEM-017', 'Amis'),      ('MEM-022', 'MEM-018', 'Famille'),
+    ('MEM-023', 'MEM-019', 'Collègues'), ('MEM-023', 'MEM-020', 'Amis'),
+    ('MEM-033', 'MEM-028', 'Voisins'),   ('MEM-033', 'MEM-029', 'Amis'),
+    ('MEM-034', 'MEM-030', 'Famille'),   ('MEM-034', 'MEM-031', 'Voisins');
