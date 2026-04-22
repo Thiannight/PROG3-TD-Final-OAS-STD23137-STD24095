@@ -7,6 +7,7 @@ public class CreateMember extends MemberInformation {
     private List<String> referees;
     private boolean registrationFeePaid;
     private boolean membershipDuesPaid;
+    private long membershipDuesAmount;
 
     public CreateMember() {}
 
@@ -36,5 +37,12 @@ public class CreateMember extends MemberInformation {
     }
     public void setMembershipDuesPaid(boolean membershipDuesPaid) {
         this.membershipDuesPaid = membershipDuesPaid;
+    }
+
+    public long getMembershipDuesAmount() {
+        return membershipDuesAmount;
+    }
+    public void setMembershipDuesAmount(long membershipDuesAmount) {
+        this.membershipDuesAmount = membershipDuesAmount;
     }
 }

@@ -44,6 +44,13 @@ public class MemberService {
                     "The mandatory annual membership dues have not been paid.");
         }
 
+        long requiredDues = memberRepository.getCollectivityAnnualDues(req.getCollectivityIdentifier());
+        if (req.getMembershipDuesAmount() < requiredDues) {
+            throw new BadRequestException(
+                    "Insufficient annual dues payment. Required: " + requiredDues
+                            + " Ar, provided: " + req.getMembershipDuesAmount() + " Ar.");
+        }
+
         List<String> refereeIds = req.getReferees();
         if (refereeIds == null || refereeIds.size() < 2) {
             throw new BadRequestException(
@@ -61,7 +68,8 @@ public class MemberService {
         for (Member referee : referees) {
             if (!isConfirmed(referee.getOccupation())) {
                 throw new BadRequestException(
-                        "Sponsor " + referee.getId() + " is not a confirmed member (SENIOR or higher).");
+                        "Sponsor " + referee.getId()
+                                + " is not a confirmed member (SENIOR or higher).");
             }
         }
 
