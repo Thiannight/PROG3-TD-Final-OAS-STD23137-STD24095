@@ -30,7 +30,7 @@ public class MemberRepository {
         m.setGender(Gender.valueOf(rs.getString("gender")));
         m.setAddress(rs.getString("address"));
         m.setProfession(rs.getString("profession"));
-        m.setPhoneNumber(rs.getString("phone_number"));
+        m.setPhoneNumber(rs.getLong("phone_number"));
         m.setEmail(rs.getString("email"));
         m.setOccupation(MemberOccupation.valueOf(rs.getString("occupation")));
         m.setMembershipDate(rs.getObject("adhesion_date", LocalDate.class));
@@ -135,7 +135,7 @@ public class MemberRepository {
             ps.setString(6, member.getGender().name());
             ps.setString(7, member.getAddress());
             ps.setString(8, member.getProfession());
-            ps.setString(9, member.getPhoneNumber());
+            ps.setLong(9, member.getPhoneNumber());
             ps.setString(10, member.getEmail());
             ps.setDate(11, Date.valueOf(member.getMembershipDate()));
             ps.setString(12, member.getOccupation().name());

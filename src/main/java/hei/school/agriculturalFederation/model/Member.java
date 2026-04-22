@@ -11,7 +11,7 @@ public class Member {
     private Gender gender;
     private String address;
     private String profession;
-    private String phoneNumber;
+    private long phoneNumber;
     private String email;
     private MemberOccupation occupation;
     private LocalDate membershipDate;
@@ -68,10 +68,10 @@ public class Member {
         this.profession = profession;
     }
 
-    public String getPhoneNumber() {
+    public long getPhoneNumber() {
         return phoneNumber;
     }
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(long phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
