@@ -3,18 +3,22 @@ info:
   title: Agricultural federation API
   description: |
     # Versioning
-    This API uses semantic versioning (MAJOR.MINOR.PATCH). Available versions are : 
+    This API uses semantic versioning (MAJOR.MINOR.PATCH). Available versions are :
     - v0.0.1 (2026-04-21) : POST /collectivities for collectivities creation and POST /members for members creation.
-  version: 0.0.1
+    - v0.0.2 (2026-04-22) : PATCH /collectivities/{collectivityId}/identity for assigning a unique number and name to a collectivity (Feature J).
+  version: 0.0.2
 servers:
   - url: 'https://localhost:8080'
+
 paths:
   '/collectivities':
     post:
       summary: Create list of collectivities
       description: |
-        During collectivity request body creation, only members ID are provided to identify members. 
+        During collectivity request body creation, only members ID are provided to identify members.
         But the response content includes members information, not only their IDs.
+        Note: the created collectivity will have null `number` and `name` until the federation assigns
+        them via PATCH /collectivities/{collectivityId}/identity.
       requestBody:
         content:
           application/json:
@@ -23,7 +27,7 @@ paths:
               items:
                 $ref: '#/components/schemas/CreateCollectivity'
       responses:
-        201:
+        '201':
           description: List of created collectivities
           content:
             application/json:
@@ -31,10 +35,57 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Collectivity'
-        400:
+        '400':
           description: Collectivity without federation approval or structure missing.
-        404:
+        '404':
           description: Member not found.
+
+  '/collectivities/{collectivityId}/identity':
+    patch:
+      summary: Assign a number and a name to a collectivity
+      description: |
+        Assigns a unique number and/or a unique name to an existing collectivity.
+        These attributes are set by the federation and are **immutable once assigned**.
+
+        Rules:
+        - At least one of `number` or `name` must be provided.
+        - If the collectivity already has a `number` assigned, attempting to change it returns **409 Conflict**.
+        - If the collectivity already has a `name` assigned, attempting to change it returns **409 Conflict**.
+        - If the provided `number` is already used by another collectivity, **400 Bad Request** is returned.
+        - If the provided `name` is already used by another collectivity, **400 Bad Request** is returned.
+      parameters:
+        - name: collectivityId
+          in: path
+          required: true
+          description: The internal UUID of the collectivity.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignCollectivityIdentity'
+      responses:
+        '200':
+          description: Collectivity with number and/or name successfully assigned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collectivity'
+        '400':
+          description: |
+            Bad request in the following cases:
+            - Neither `number` nor `name` is provided.
+            - The provided `number` is already used by another collectivity.
+            - The provided `name` is already used by another collectivity.
+        '404':
+          description: Collectivity not found.
+        '409':
+          description: |
+            Conflict: the collectivity already has a `number` or a `name` assigned.
+            Once set, a number or a name cannot be changed.
+
   '/members':
     post:
       summary: Create list of members
@@ -46,7 +97,7 @@ paths:
               items:
                 $ref: '#/components/schemas/CreateMember'
       responses:
-        201:
+        '201':
           description: List of created members
           content:
             application/json:
@@ -54,15 +105,39 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Member'
-        400:
+        '400':
           description: |
-            The following case must return a bad request exception : 
+            The following cases must return a bad request exception:
             - Member with bad referees or without proper payment.
             - Membership dues not paid or registration fee not paid.
-        404:
+        '404':
           description: Either collectivity or member not found.
+
 components:
   schemas:
+
+    AssignCollectivityIdentity:
+      type: object
+      description: |
+        Payload to assign a unique number and/or a unique name to a collectivity.
+        At least one of the two fields must be provided.
+        Once a field is assigned, it cannot be modified.
+      properties:
+        number:
+          type: string
+          nullable: true
+          description: >
+            Unique human-readable identifier assigned by the federation
+            (e.g. "COL-004"). Immutable once set.
+          example: "COL-004"
+        name:
+          type: string
+          nullable: true
+          description: >
+            Unique name of the collectivity assigned by the federation
+            (e.g. "Vokatra Vaovao"). Immutable once set.
+          example: "Vokatra Vaovao"
+
     CreateCollectivity:
       type: object
       properties:
@@ -71,12 +146,12 @@ components:
         members:
           type: array
           items:
-            schema:
-              $ref: '#/components/schemas/MemberIdentifier'
+            $ref: '#/components/schemas/MemberIdentifier'
         federationApproval:
           type: boolean
         structure:
           $ref: '#/components/schemas/CreateCollectivityStructure'
+
     CreateCollectivityStructure:
       type: object
       properties:
@@ -88,6 +163,7 @@ components:
           $ref: '#/components/schemas/MemberIdentifier'
         secretary:
           $ref: '#/components/schemas/MemberIdentifier'
+
     CollectivityStructure:
       type: object
       properties:
@@ -99,11 +175,27 @@ components:
           $ref: '#/components/schemas/Member'
         secretary:
           $ref: '#/components/schemas/Member'
+
     Collectivity:
       type: object
       properties:
         id:
           type: string
+          description: Internal UUID generated at creation time.
+        number:
+          type: string
+          nullable: true
+          description: >
+            Unique human-readable number assigned by the federation.
+            Null until assigned via PATCH /collectivities/{id}/identity.
+          example: "COL-004"
+        name:
+          type: string
+          nullable: true
+          description: >
+            Unique name of the collectivity assigned by the federation.
+            Null until assigned via PATCH /collectivities/{id}/identity.
+          example: "Vokatra Vaovao"
         location:
           type: string
         structure:
@@ -112,8 +204,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Member'
+
     MemberIdentifier:
       type: string
+
     CreateMember:
       type: object
       allOf:
@@ -129,6 +223,13 @@ components:
           type: boolean
         membershipDuesPaid:
           type: boolean
+        membershipDuesAmount:
+          type: integer
+          format: int64
+          description: >
+            Amount paid for annual membership dues (in Ariary).
+            Must be greater than or equal to the collectivity's required annual dues.
+
     MemberInformation:
       type: object
       properties:
@@ -146,11 +247,13 @@ components:
         profession:
           type: string
         phoneNumber:
-          type: int
+          type: integer
+          format: int64
         email:
           type: string
         occupation:
           $ref: '#/components/schemas/MemberOccupation'
+
     Member:
       type: object
       allOf:
@@ -162,11 +265,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Member'
+
     Gender:
       type: string
       enum:
         - MALE
         - FEMALE
+
     MemberOccupation:
       type: string
       enum:
