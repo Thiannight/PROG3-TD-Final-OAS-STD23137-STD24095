@@ -112,3 +112,12 @@ CREATE TABLE member_payment (
     creation_date       DATE NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member(id)
 );
+
+
+CREATE TABLE collectivity_account (
+    collectivity_id    VARCHAR(255) NOT NULL,
+    account_id         VARCHAR(255) NOT NULL,
+    account_type       VARCHAR(50)  NOT NULL,
+    PRIMARY KEY (collectivity_id, account_id),
+    FOREIGN KEY (collectivity_id) REFERENCES collectivity(id)
+);
