@@ -5,6 +5,9 @@ import hei.school.agriculturalFederation.model.*;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -70,6 +73,64 @@ public class FinancialAccountRepository {
         }
 
         return Optional.empty();
+    }
+
+    public List<FinancialAccount> findAllByCollectivityIdAt(String collectivityId, LocalDate at) {
+        String sql = """
+                SELECT DISTINCT account_credited_id
+                FROM collectivity_transaction
+                WHERE collectivity_id = ?
+                """;
+
+        List<String> accountIds = new ArrayList<>();
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, collectivityId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                accountIds.add(rs.getString("account_credited_id"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching account ids for collectivity: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
+
+        List<FinancialAccount> accounts = new ArrayList<>();
+        for (String accountId : accountIds) {
+            findById(accountId).ifPresent(acc -> {
+                double creditAfterAt = getCreditedAfterDate(accountId, collectivityId, at);
+                acc.setAmount(acc.getAmount() - creditAfterAt);
+                accounts.add(acc);
+            });
+        }
+
+        return accounts;
+    }
+
+    private double getCreditedAfterDate(String accountId, String collectivityId, LocalDate at) {
+        String sql = """
+                SELECT COALESCE(SUM(amount), 0)
+                FROM collectivity_transaction
+                WHERE account_credited_id = ?
+                  AND collectivity_id = ?
+                  AND creation_date > ?
+                """;
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, accountId);
+            ps.setString(2, collectivityId);
+            ps.setDate(3, Date.valueOf(at));
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+            return 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error calculating credit after date: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
     }
 
     public void creditAccount(String accountId, double amount) {
