@@ -72,6 +72,14 @@ public class MemberPaymentService {
 
         memberPaymentRepository.save(member.getId(), payment);
 
+
+        String collectivityId = financialAccountRepository
+                .findCollectivityIdByAccountId(account.getId());
+        if (collectivityId == null) {
+            // Fallback: use the member's primary collectivity
+            collectivityId = member.getCollectivityId();
+        }
+
         CollectivityTransaction transaction = new CollectivityTransaction();
         transaction.setId(UUID.randomUUID().toString());
         transaction.setCreationDate(LocalDate.now());
@@ -80,7 +88,6 @@ public class MemberPaymentService {
         transaction.setAccountCredited(account);
         transaction.setMemberDebited(member);
 
-        String collectivityId = member.getCollectivityId();
         transactionRepository.save(collectivityId, transaction);
 
         return payment;

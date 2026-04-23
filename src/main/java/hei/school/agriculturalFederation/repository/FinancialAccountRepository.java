@@ -21,66 +21,63 @@ public class FinancialAccountRepository {
 
     public Optional<FinancialAccount> findById(String id) {
         Connection conn = dataSourceConfig.getConnection();
-
-        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM cash_account WHERE id = ?")) {
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                CashAccount acc = new CashAccount();
-                acc.setId(rs.getString("id"));
-                acc.setAmount(rs.getDouble("amount"));
-                return Optional.of(acc);
+        try {
+            // 1. Cash
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT * FROM cash_account WHERE id = ?")) {
+                ps.setString(1, id);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    CashAccount acc = new CashAccount();
+                    acc.setId(rs.getString("id"));
+                    acc.setAmount(rs.getDouble("amount"));
+                    return Optional.of(acc);
+                }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error querying cash_account: " + e.getMessage(), e);
-        }
-
-        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM mobile_banking_account WHERE id = ?")) {
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                MobileBankingAccount acc = new MobileBankingAccount();
-                acc.setId(rs.getString("id"));
-                acc.setHolderName(rs.getString("holder_name"));
-                acc.setMobileBankingService(MobileBankingService.valueOf(rs.getString("mobile_banking_service")));
-                acc.setMobileNumber(rs.getLong("mobile_number"));
-                acc.setAmount(rs.getDouble("amount"));
-                return Optional.of(acc);
+            // 2. Mobile banking
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT * FROM mobile_banking_account WHERE id = ?")) {
+                ps.setString(1, id);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    MobileBankingAccount acc = new MobileBankingAccount();
+                    acc.setId(rs.getString("id"));
+                    acc.setHolderName(rs.getString("holder_name"));
+                    acc.setMobileBankingService(
+                            MobileBankingService.valueOf(rs.getString("mobile_banking_service")));
+                    acc.setMobileNumber(rs.getLong("mobile_number"));
+                    acc.setAmount(rs.getDouble("amount"));
+                    return Optional.of(acc);
+                }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error querying mobile_banking_account: " + e.getMessage(), e);
-        }
-
-        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM bank_account WHERE id = ?")) {
-            ps.setString(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                BankAccount acc = new BankAccount();
-                acc.setId(rs.getString("id"));
-                acc.setHolderName(rs.getString("holder_name"));
-                acc.setBankName(Bank.valueOf(rs.getString("bank_name")));
-                acc.setBankCode(rs.getInt("bank_code"));
-                acc.setBankBranchCode(rs.getInt("bank_branch_code"));
-                acc.setBankAccountNumber(rs.getInt("bank_account_number"));
-                acc.setBankAccountKey(rs.getInt("bank_account_key"));
-                acc.setAmount(rs.getDouble("amount"));
-                return Optional.of(acc);
+            // 3. Bank account
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT * FROM bank_account WHERE id = ?")) {
+                ps.setString(1, id);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    BankAccount acc = new BankAccount();
+                    acc.setId(rs.getString("id"));
+                    acc.setHolderName(rs.getString("holder_name"));
+                    acc.setBankName(Bank.valueOf(rs.getString("bank_name")));
+                    acc.setBankCode(rs.getInt("bank_code"));
+                    acc.setBankBranchCode(rs.getInt("bank_branch_code"));
+                    acc.setBankAccountNumber(rs.getInt("bank_account_number"));
+                    acc.setBankAccountKey(rs.getInt("bank_account_key"));
+                    acc.setAmount(rs.getDouble("amount"));
+                    return Optional.of(acc);
+                }
             }
+            return Optional.empty();
         } catch (SQLException e) {
-            throw new RuntimeException("Error querying bank_account: " + e.getMessage(), e);
+            throw new RuntimeException("Error querying financial account: " + e.getMessage(), e);
         } finally {
             dataSourceConfig.closeConnection(conn);
         }
-
-        return Optional.empty();
     }
 
     public List<FinancialAccount> findAllByCollectivityIdAt(String collectivityId, LocalDate at) {
-        String sql = """
-                SELECT DISTINCT account_credited_id
-                FROM collectivity_transaction
-                WHERE collectivity_id = ?
-                """;
+        String sql = "SELECT account_id FROM collectivity_account WHERE collectivity_id = ?";
 
         List<String> accountIds = new ArrayList<>();
         Connection conn = dataSourceConfig.getConnection();
@@ -88,7 +85,7 @@ public class FinancialAccountRepository {
             ps.setString(1, collectivityId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                accountIds.add(rs.getString("account_credited_id"));
+                accountIds.add(rs.getString("account_id"));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error fetching account ids for collectivity: " + e.getMessage(), e);
@@ -133,22 +130,40 @@ public class FinancialAccountRepository {
         }
     }
 
+
+    public String findCollectivityIdByAccountId(String accountId) {
+        String sql = "SELECT collectivity_id FROM collectivity_account WHERE account_id = ? LIMIT 1";
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, accountId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("collectivity_id");
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error in findCollectivityIdByAccountId: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
+    }
     public void creditAccount(String accountId, double amount) {
         Connection conn = dataSourceConfig.getConnection();
-
-        String[] tables = {"cash_account", "mobile_banking_account", "bank_account"};
-        for (String table : tables) {
-            try (PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE " + table + " SET amount = amount + ? WHERE id = ?")) {
-                ps.setDouble(1, amount);
-                ps.setString(2, accountId);
-                if (ps.executeUpdate() > 0) return;
-            } catch (SQLException e) {
-                throw new RuntimeException("Error crediting account in " + table + ": " + e.getMessage(), e);
+        try {
+            String[] tables = {"cash_account", "mobile_banking_account", "bank_account"};
+            for (String table : tables) {
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE " + table + " SET amount = amount + ? WHERE id = ?")) {
+                    ps.setDouble(1, amount);
+                    ps.setString(2, accountId);
+                    if (ps.executeUpdate() > 0) return;
+                }
             }
+            throw new RuntimeException("Financial account not found: " + accountId);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error crediting account: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
         }
-
-        dataSourceConfig.closeConnection(conn);
-        throw new RuntimeException("Financial account not found: " + accountId);
     }
 }

@@ -49,6 +49,16 @@ CREATE TABLE sponsorship (
     FOREIGN KEY (sponsor_id)   REFERENCES member(id)
 );
 
+CREATE TABLE member_collectivity (
+    member_id       VARCHAR(255) NOT NULL,
+    collectivity_id VARCHAR(255) NOT NULL,
+    occupation      occupation_enum NOT NULL,
+    adhesion_date   DATE NOT NULL,
+    PRIMARY KEY (member_id, collectivity_id),
+    FOREIGN KEY (member_id)       REFERENCES member(id),
+    FOREIGN KEY (collectivity_id) REFERENCES collectivity(id)
+);
+
 --
 CREATE TYPE frequency_enum AS ENUM ('WEEKLY', 'MONTHLY', 'ANNUALLY', 'PUNCTUALLY');
 CREATE TYPE activity_status_enum AS ENUM ('ACTIVE', 'INACTIVE');

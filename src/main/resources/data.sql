@@ -1,59 +1,181 @@
-INSERT INTO collectivity (id, number, name, location, agricultural_specialty, creation_date, federation_approval,
-                          annual_dues, president_id, vice_president_id, treasurer_id, secretary_id)
+-- ============================================================
+-- Collectivities
+-- ============================================================
+INSERT INTO collectivity (id, number, name, location, agricultural_specialty, creation_date,
+                          federation_approval, annual_dues,
+                          president_id, vice_president_id, treasurer_id, secretary_id)
 VALUES
-    ('COL-001', 'COL-001', 'Ny Tantsaha Malagasy', 'Antananarivo', 'Riziculture',        '2022-01-15', TRUE, 200000, NULL, NULL, NULL, NULL),
-    ('COL-002', 'COL-002', 'Vokatra Tsara',        'Fianarantsoa',  'Maraîchage',         '2022-06-10', TRUE, 150000, NULL, NULL, NULL, NULL),
-    ('COL-003', 'COL-003', 'Harena Voajanahary',   'Toamasina',     'Culture de vanille', '2023-03-20', TRUE, 180000, NULL, NULL, NULL, NULL);
+    ('col-1', '1', 'Mpanorina',      'Ambatondrazaka', 'Riziculture', '2022-01-15', TRUE, 200000, NULL, NULL, NULL, NULL),
+    ('col-2', '2', 'Dobo voalohany', 'Ambatondrazaka', 'Pisciculture','2022-01-15', TRUE, 200000, NULL, NULL, NULL, NULL),
+    ('col-3', '3', 'Tantely mamy',   'Brickaville',    'Apiculture',  '2022-01-15', TRUE, 100000, NULL, NULL, NULL, NULL);
 
-INSERT INTO member (id, collectivity_id, first_name, last_name, birth_date, gender, address, profession,
-                    phone_number, email, adhesion_date, occupation, registration_fee_paid, membership_dues_paid)
+-- ============================================================
+-- Members
+-- C1-M1..C1-M8 are stored once (collectivity_id = col-1 = their primary collectivity).
+-- Their membership in col-2 is tracked via member_collectivity.
+-- C3-M1..C3-M8 belong only to col-3.
+-- adhesion_date 2022-01-15 ensures all pass the 6-month and 90-day seniority checks.
+-- ============================================================
+INSERT INTO member (id, collectivity_id, first_name, last_name, birth_date, gender,
+                    address, profession, phone_number, email,
+                    adhesion_date, occupation,
+                    registration_fee_paid, membership_dues_paid)
 VALUES
-    ('MEM-001', 'COL-001', 'Rakoto',    'Andriamaro',     '1980-05-10', 'MALE',   '12 Rue Indépendance, Antananarivo', 'Agriculteur',  340001001, 'rakoto.andriamaro@email.mg',    '2022-01-15', 'PRESIDENT',      TRUE, TRUE),
-    ('MEM-002', 'COL-001', 'Voahangy',  'Rasoa',          '1985-08-22', 'FEMALE', '45 Av Liberté, Antananarivo',       'Agricultrice', 340001002, 'voahangy.rasoa@email.mg',       '2022-01-15', 'VICE_PRESIDENT', TRUE, TRUE),
-    ('MEM-003', 'COL-001', 'Hery',      'Rakotondrabe',   '1978-11-03', 'MALE',   '8 Rue du Marché, Antananarivo',     'Cultivateur',  340001003, 'hery.rakotondrabe@email.mg',    '2022-01-15', 'TREASURER',      TRUE, TRUE),
-    ('MEM-004', 'COL-001', 'Lalao',     'Raharison',      '1990-02-17', 'FEMALE', '23 Cité Ampefiloha, Antananarivo',  'Secrétaire',   340001004, 'lalao.raharison@email.mg',      '2022-01-15', 'SECRETARY',      TRUE, TRUE),
-    ('MEM-005', 'COL-001', 'Fidy',      'Randria',        '1988-07-30', 'MALE',   '56 Rue Pasteur, Antananarivo',      'Agriculteur',  340001005, 'fidy.randria@email.mg',         '2022-01-15', 'SENIOR',         TRUE, TRUE),
-    ('MEM-006', 'COL-001', 'Miora',     'Rasolofonirina', '1992-04-11', 'FEMALE', '3 Allée des Jacarandas, Tana',      'Agricultrice', 340001006, 'miora.rasolofonirina@email.mg', '2022-01-15', 'SENIOR',         TRUE, TRUE),
-    ('MEM-007', 'COL-001', 'Tiana',     'Razafindrabe',   '1995-09-25', 'MALE',   '17 Rue Rainitovo, Antananarivo',    'Étudiant',     340001007, 'tiana.razafindrabe@email.mg',   '2022-02-01', 'SENIOR',         TRUE, TRUE),
-    ('MEM-008', 'COL-001', 'Nasolo',    'Rabemananjara',  '1997-12-05', 'MALE',   '99 Av de France, Antananarivo',     'Cultivateur',  340001008, 'nasolo.rabemananjara@email.mg', '2022-03-10', 'SENIOR',         TRUE, TRUE),
-    ('MEM-009', 'COL-001', 'Hasina',    'Randriamasy',    '2000-06-18', 'FEMALE', '7 Rue Solombavambahoaka, Tana',     'Agricultrice', 340001009, 'hasina.randriamasy@email.mg',   '2022-04-15', 'SENIOR',         TRUE, TRUE),
-    ('MEM-010', 'COL-001', 'Toky',      'Ramaroson',      '2001-03-22', 'MALE',   '34 Cité Universitaire, Tana',       'Étudiant',     340001010, 'toky.ramaroson@email.mg',       '2022-05-01', 'JUNIOR',         TRUE, TRUE),
-    ('MEM-011', 'COL-001', 'Anja',      'Ratsimbazafy',   '2002-08-14', 'FEMALE', '21 Rue Ny Haja, Antananarivo',      'Étudiante',    340001011, 'anja.ratsimbazafy@email.mg',    '2022-06-10', 'JUNIOR',         TRUE, TRUE),
-    ('MEM-012', 'COL-001', 'Tafita',    'Rakotondrazaka', '1999-11-30', 'MALE',   '60 Bd Ratsimilaho, Antananarivo',   'Cultivateur',  340001012, 'tafita.rakotondrazaka@email.mg','2022-07-20', 'JUNIOR',         TRUE, TRUE),
+    ('C1-M1', 'col-1', 'Prénom membre 1',  'Nom membre 1',  '1980-02-01', 'MALE',   'Lot II V M Ambato.',  'Riziculteur', 341234567,  'member.1@fed-agri.mg',  '2022-01-15', 'PRESIDENT',      TRUE, TRUE),
+    ('C1-M2', 'col-1', 'Prénom membre 2',  'Nom membre 2',  '1982-03-05', 'MALE',   'Lot II F Ambato.',    'Agriculteur', 321234567,  'member.2@fed-agri.mg',  '2022-01-15', 'VICE_PRESIDENT', TRUE, TRUE),
+    ('C1-M3', 'col-1', 'Prénom membre 3',  'Nom membre 3',  '1992-03-10', 'MALE',   'Lot II J Ambato.',    'Collecteur',  331234567,  'member.3@fed-agri.mg',  '2022-01-15', 'SECRETARY',      TRUE, TRUE),
+    ('C1-M4', 'col-1', 'Prénom membre 4',  'Nom membre 4',  '1988-05-22', 'FEMALE', 'Lot A K 50 Ambato.',  'Distributeur',381234567,  'member.4@fed-agri.mg',  '2022-01-15', 'TREASURER',      TRUE, TRUE),
+    ('C1-M5', 'col-1', 'Prénom membre 5',  'Nom membre 5',  '1999-08-21', 'MALE',   'Lot UV 80 Ambato.',   'Riziculteur', 373434567,  'member.5@fed-agri.mg',  '2022-01-15', 'SENIOR',         TRUE, TRUE),
+    ('C1-M6', 'col-1', 'Prénom membre 6',  'Nom membre 6',  '1998-08-22', 'FEMALE', 'Lot UV 6 Ambato.',    'Riziculteur', 372234567,  'member.6@fed-agri.mg',  '2022-01-15', 'SENIOR',         TRUE, TRUE),
+    ('C1-M7', 'col-1', 'Prénom membre 7',  'Nom membre 7',  '1998-01-31', 'MALE',   'Lot UV 7 Ambato.',    'Riziculteur', 374234567,  'member.7@fed-agri.mg',  '2022-01-15', 'SENIOR',         TRUE, TRUE),
+    ('C1-M8', 'col-1', 'Prénom membre 8',  'Nom membre 8',  '1975-08-20', 'MALE',   'Lot UV 8 Ambato.',    'Riziculteur', 370234567,  'member.8@fed-agri.mg',  '2022-01-15', 'SENIOR',         TRUE, TRUE),
 
-    ('MEM-013', 'COL-002', 'Solo',      'Andriantsoa',    '1975-01-08', 'MALE',   '5 Rue de la Paix, Fianarantsoa',    'Agriculteur',  340002001, 'solo.andriantsoa@email.mg',     '2022-06-10', 'PRESIDENT',      TRUE, TRUE),
-    ('MEM-014', 'COL-002', 'Noro',      'Rafaralahimana', '1983-05-19', 'FEMALE', '12 Av Gallieni, Fianarantsoa',       'Agricultrice', 340002002, 'noro.rafaralahimana@email.mg',  '2022-06-10', 'VICE_PRESIDENT', TRUE, TRUE),
-    ('MEM-015', 'COL-002', 'Mamy',      'Razafindrakoto', '1980-09-14', 'MALE',   '33 Rue Rainandriamampandry, Fiana', 'Comptable',    340002003, 'mamy.razafindrakoto@email.mg',  '2022-06-10', 'TREASURER',      TRUE, TRUE),
-    ('MEM-016', 'COL-002', 'Fanja',     'Rakotoniary',    '1987-03-27', 'FEMALE', '8 Cité Ambalakely, Fianarantsoa',   'Secrétaire',   340002004, 'fanja.rakotoniary@email.mg',    '2022-06-10', 'SECRETARY',      TRUE, TRUE),
-    ('MEM-017', 'COL-002', 'Lanto',     'Andrianaivo',    '1991-07-06', 'MALE',   '45 Rue Ny Fitiavana, Fiana',        'Agriculteur',  340002005, 'lanto.andrianaivo@email.mg',    '2022-06-10', 'SENIOR',         TRUE, TRUE),
-    ('MEM-018', 'COL-002', 'Vatosoa',   'Raharinoro',     '1993-12-21', 'FEMALE', '19 Av de la Réunification, Fiana',  'Cultivatrice', 340002006, 'vatosoa.raharinoro@email.mg',   '2022-06-10', 'SENIOR',         TRUE, TRUE),
-    ('MEM-019', 'COL-002', 'Mendrika',  'Rasoamanarivo',  '1989-04-09', 'MALE',   '27 Rue Ranaivo, Fianarantsoa',      'Agriculteur',  340002007, 'mendrika.rasoamanarivo@email.mg','2022-07-01','SENIOR',         TRUE, TRUE),
-    ('MEM-020', 'COL-002', 'Tahiry',    'Rakotonirina',   '1996-10-15', 'FEMALE', '11 Cité Tanambao, Fianarantsoa',    'Étudiante',    340002008, 'tahiry.rakotonirina@email.mg',  '2022-08-05', 'SENIOR',         TRUE, TRUE),
-    ('MEM-021', 'COL-002', 'Njaka',     'Andriamahefa',   '1998-02-28', 'MALE',   '3 Rue du Progrès, Fianarantsoa',    'Cultivateur',  340002009, 'njaka.andriamahefa@email.mg',   '2022-09-12', 'SENIOR',         TRUE, TRUE),
-    ('MEM-022', 'COL-002', 'Diary',     'Rajaonah',       '2001-06-17', 'FEMALE', '50 Bd Lyautey, Fianarantsoa',       'Étudiante',    340002010, 'diary.rajaonah@email.mg',       '2022-10-20', 'JUNIOR',         TRUE, TRUE),
-    ('MEM-023', 'COL-002', 'Tsiry',     'Andrianjafy',    '2003-08-04', 'MALE',   '6 Rue Ny Fanantenana, Fiana',       'Étudiant',     340002011, 'tsiry.andrianjafy@email.mg',    '2022-11-01', 'JUNIOR',         TRUE, TRUE),
+    ('C3-M1', 'col-3', 'Prénom membre 9',  'Nom membre 9',  '1988-01-02', 'MALE',   'Lot 33 J Antsirabe',  'Apiculteur',  34034567,   'member.9@fed-agri.mg',  '2022-01-15', 'PRESIDENT',      TRUE, TRUE),
+    ('C3-M2', 'col-3', 'Prénom membre 10', 'Nom membre 10', '1982-03-05', 'MALE',   'Lot 2 J Antsirabe',   'Agriculteur', 338634567,  'member.10@fed-agri.mg', '2022-01-15', 'VICE_PRESIDENT', TRUE, TRUE),
+    ('C3-M3', 'col-3', 'Prénom membre 11', 'Nom membre 11', '1992-03-12', 'MALE',   'Lot 8 KM Antsirabe',  'Collecteur',  338234567,  'member.11@fed-agri.mg', '2022-01-15', 'SECRETARY',      TRUE, TRUE),
+    ('C3-M4', 'col-3', 'Prénom membre 12', 'Nom membre 12', '1988-05-10', 'FEMALE', 'Lot A K 50 Antsirabe','Distributeur',382334567,  'member.12@fed-agri.mg', '2022-01-15', 'TREASURER',      TRUE, TRUE),
+    ('C3-M5', 'col-3', 'Prénom membre 13', 'Nom membre 13', '1999-08-11', 'MALE',   'Lot UV 80 Antsirabe', 'Apiculteur',  373365567,  'member.13@fed-agri.mg', '2022-01-15', 'SENIOR',         TRUE, TRUE),
+    ('C3-M6', 'col-3', 'Prénom membre 14', 'Nom membre 14', '1998-08-09', 'FEMALE', 'Lot UV 6 Antsirabe',  'Apiculteur',  378234567,  'member.14@fed-agri.mg', '2022-01-15', 'SENIOR',         TRUE, TRUE),
+    ('C3-M7', 'col-3', 'Prénom membre 15', 'Nom membre 15', '1998-01-13', 'MALE',   'Lot UV 7 Antsirabe',  'Apiculteur',  374914567,  'member.15@fed-agri.mg', '2022-01-15', 'SENIOR',         TRUE, TRUE),
+    ('C3-M8', 'col-3', 'Prénom membre 16', 'Nom membre 16', '1975-08-02', 'MALE',   'Lot UV 8 Antsirabe',  'Apiculteur',  370634567,  'member.16@fed-agri.mg', '2022-01-15', 'SENIOR',         TRUE, TRUE);
 
-    ('MEM-024', 'COL-003', 'Benja',     'Rabenilaina',    '1977-03-12', 'MALE',   '14 Rue de la Mer, Toamasina',        'Agriculteur',  340003001, 'benja.rabenilaina@email.mg',    '2023-03-20', 'PRESIDENT',      TRUE, TRUE),
-    ('MEM-025', 'COL-003', 'Mirana',    'Ralaimihoatra',  '1984-07-25', 'FEMALE', '8 Av de l''Indépendance, Toamasina', 'Agricultrice', 340003002, 'mirana.ralaimihoatra@email.mg', '2023-03-20', 'VICE_PRESIDENT', TRUE, TRUE),
-    ('MEM-026', 'COL-003', 'Erick',     'Rasolondraibe',  '1981-11-18', 'MALE',   '22 Rue du Port, Toamasina',          'Comptable',    340003003, 'erick.rasolondraibe@email.mg',  '2023-03-20', 'TREASURER',      TRUE, TRUE),
-    ('MEM-027', 'COL-003', 'Zo',        'Rakotomalala',   '1990-05-07', 'FEMALE', '37 Cité Ambalakely, Toamasina',      'Secrétaire',   340003004, 'zo.rakotomalala@email.mg',      '2023-03-20', 'SECRETARY',      TRUE, TRUE),
-    ('MEM-028', 'COL-003', 'Haja',      'Andriantsalama', '1986-08-30', 'MALE',   '5 Rue Rainitovo, Toamasina',         'Cultivateur',  340003005, 'haja.andriantsalama@email.mg',  '2023-03-20', 'SENIOR',         TRUE, TRUE),
-    ('MEM-029', 'COL-003', 'Saholy',    'Rakotondravo',   '1994-01-14', 'FEMALE', '60 Bd Ratsimilaho, Toamasina',       'Agricultrice', 340003006, 'saholy.rakotondravo@email.mg',  '2023-03-20', 'SENIOR',         TRUE, TRUE),
-    ('MEM-030', 'COL-003', 'Feno',      'Andriamasy',     '1992-04-22', 'MALE',   '18 Rue Ny Tanindrazana, Toamasina',  'Agriculteur',  340003007, 'feno.andriamasy@email.mg',      '2023-04-01', 'SENIOR',         TRUE, TRUE),
-    ('MEM-031', 'COL-003', 'Kanto',     'Ramarolahy',     '1988-09-03', 'FEMALE', '9 Av Gallieni, Toamasina',           'Cultivatrice', 340003008, 'kanto.ramarolahy@email.mg',     '2023-04-15', 'SENIOR',         TRUE, TRUE),
-    ('MEM-032', 'COL-003', 'Nivo',      'Razafimaharo',   '1997-12-28', 'MALE',   '43 Rue du Marché, Toamasina',        'Cultivateur',  340003009, 'nivo.razafimaharo@email.mg',    '2023-05-10', 'SENIOR',         TRUE, TRUE),
-    ('MEM-033', 'COL-003', 'Rindra',    'Rakotozafy',     '2000-03-16', 'FEMALE', '25 Cité Tanambao, Toamasina',        'Étudiante',    340003010, 'rindra.rakotozafy@email.mg',    '2023-06-01', 'JUNIOR',         TRUE, TRUE),
-    ('MEM-034', 'COL-003', 'Arj',       'Andriamandroso', '2002-07-09', 'MALE',   '7 Rue du Progrès, Toamasina',        'Étudiant',     340003011, 'arj.andriamandroso@email.mg',   '2023-07-15', 'JUNIOR',         TRUE, TRUE);
+-- ============================================================
+-- Collectivity structure FKs
+-- ============================================================
+UPDATE collectivity SET president_id='C1-M1', vice_president_id='C1-M2', treasurer_id='C1-M4', secretary_id='C1-M3' WHERE id='col-1';
+UPDATE collectivity SET president_id='C1-M5', vice_president_id='C1-M6', treasurer_id='C1-M8', secretary_id='C1-M7' WHERE id='col-2';
+UPDATE collectivity SET president_id='C3-M1', vice_president_id='C3-M2', treasurer_id='C3-M4', secretary_id='C3-M3' WHERE id='col-3';
 
-UPDATE collectivity SET president_id = 'MEM-001', vice_president_id = 'MEM-002', treasurer_id = 'MEM-003', secretary_id = 'MEM-004' WHERE id = 'COL-001';
-UPDATE collectivity SET president_id = 'MEM-013', vice_president_id = 'MEM-014', treasurer_id = 'MEM-015', secretary_id = 'MEM-016' WHERE id = 'COL-002';
-UPDATE collectivity SET president_id = 'MEM-024', vice_president_id = 'MEM-025', treasurer_id = 'MEM-026', secretary_id = 'MEM-027' WHERE id = 'COL-003';
+-- ============================================================
+-- member_collectivity: explicit per-collectivity membership rows
+-- This is the source of truth for "which members are in which collectivity"
+-- and what occupation they hold there.
+-- ============================================================
+INSERT INTO member_collectivity (member_id, collectivity_id, occupation, adhesion_date) VALUES
+-- col-1
+('C1-M1', 'col-1', 'PRESIDENT',      '2022-01-15'),
+('C1-M2', 'col-1', 'VICE_PRESIDENT', '2022-01-15'),
+('C1-M3', 'col-1', 'SECRETARY',      '2022-01-15'),
+('C1-M4', 'col-1', 'TREASURER',      '2022-01-15'),
+('C1-M5', 'col-1', 'SENIOR',         '2022-01-15'),
+('C1-M6', 'col-1', 'SENIOR',         '2022-01-15'),
+('C1-M7', 'col-1', 'SENIOR',         '2022-01-15'),
+('C1-M8', 'col-1', 'SENIOR',         '2022-01-15'),
+-- col-2 (same people, different roles per PDF table 3)
+('C1-M1', 'col-2', 'SENIOR',         '2022-01-15'),
+('C1-M2', 'col-2', 'SENIOR',         '2022-01-15'),
+('C1-M3', 'col-2', 'SENIOR',         '2022-01-15'),
+('C1-M4', 'col-2', 'SENIOR',         '2022-01-15'),
+('C1-M5', 'col-2', 'PRESIDENT',      '2022-01-15'),
+('C1-M6', 'col-2', 'VICE_PRESIDENT', '2022-01-15'),
+('C1-M7', 'col-2', 'SECRETARY',      '2022-01-15'),
+('C1-M8', 'col-2', 'TREASURER',      '2022-01-15'),
+-- col-3
+('C3-M1', 'col-3', 'PRESIDENT',      '2022-01-15'),
+('C3-M2', 'col-3', 'VICE_PRESIDENT', '2022-01-15'),
+('C3-M3', 'col-3', 'SECRETARY',      '2022-01-15'),
+('C3-M4', 'col-3', 'TREASURER',      '2022-01-15'),
+('C3-M5', 'col-3', 'SENIOR',         '2022-01-15'),
+('C3-M6', 'col-3', 'SENIOR',         '2022-01-15'),
+('C3-M7', 'col-3', 'SENIOR',         '2022-01-15'),
+('C3-M8', 'col-3', 'SENIOR',         '2022-01-15');
 
+-- ============================================================
+-- Sponsorships
+-- ============================================================
 INSERT INTO sponsorship (candidate_id, sponsor_id, relationship_nature) VALUES
-    ('MEM-010', 'MEM-005', 'Collègues'), ('MEM-010', 'MEM-006', 'Amis'),
-    ('MEM-011', 'MEM-007', 'Famille'),   ('MEM-011', 'MEM-017', 'Collègues'),
-    ('MEM-012', 'MEM-008', 'Voisins'),   ('MEM-012', 'MEM-009', 'Amis'),
-    ('MEM-022', 'MEM-017', 'Amis'),      ('MEM-022', 'MEM-018', 'Famille'),
-    ('MEM-023', 'MEM-019', 'Collègues'), ('MEM-023', 'MEM-020', 'Amis'),
-    ('MEM-033', 'MEM-028', 'Voisins'),   ('MEM-033', 'MEM-029', 'Amis'),
-    ('MEM-034', 'MEM-030', 'Famille'),   ('MEM-034', 'MEM-031', 'Voisins');
+                                                                            ('C1-M3', 'C1-M1', 'Non précisé'), ('C1-M3', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M4', 'C1-M1', 'Non précisé'), ('C1-M4', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M5', 'C1-M1', 'Non précisé'), ('C1-M5', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M6', 'C1-M1', 'Non précisé'), ('C1-M6', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M7', 'C1-M1', 'Non précisé'), ('C1-M7', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M8', 'C1-M6', 'Non précisé'), ('C1-M8', 'C1-M7', 'Non précisé'),
+                                                                            ('C3-M3', 'C3-M1', 'Non précisé'), ('C3-M3', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M4', 'C3-M1', 'Non précisé'), ('C3-M4', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M5', 'C3-M1', 'Non précisé'), ('C3-M5', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M6', 'C3-M1', 'Non précisé'), ('C3-M6', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M7', 'C3-M1', 'Non précisé'), ('C3-M7', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M8', 'C3-M1', 'Non précisé'), ('C3-M8', 'C3-M2', 'Non précisé');
+
+-- ============================================================
+-- Membership fees
+-- ============================================================
+INSERT INTO membership_fee (id, collectivity_id, eligible_from, frequency, amount, label, status) VALUES
+                                                                                                      ('cot-1', 'col-1', '2026-01-01', 'ANNUALLY', 100000, 'Cotisation annuelle', 'ACTIVE'),
+                                                                                                      ('cot-2', 'col-2', '2026-01-01', 'ANNUALLY', 100000, 'Cotisation annuelle', 'ACTIVE'),
+                                                                                                      ('cot-3', 'col-3', '2026-01-01', 'ANNUALLY',  50000, 'Cotisation annuelle', 'ACTIVE');
+
+-- ============================================================
+-- Financial accounts
+-- ============================================================
+INSERT INTO cash_account (id, amount) VALUES
+                                          ('C1-A-CASH', 0),
+                                          ('C2-A-CASH', 0),
+                                          ('C3-A-CASH', 0);
+
+INSERT INTO mobile_banking_account (id, holder_name, mobile_banking_service, mobile_number, amount) VALUES
+                                                                                                        ('C1-A-MOBILE-1', 'Mpanorina',      'ORANGE_MONEY', 370489612, 0),
+                                                                                                        ('C2-A-MOBILE-1', 'Dobo voalohany', 'ORANGE_MONEY', 320489612, 0);
+
+INSERT INTO collectivity_account (collectivity_id, account_id, account_type) VALUES
+                                                                                 ('col-1', 'C1-A-CASH',     'CASH'),
+                                                                                 ('col-1', 'C1-A-MOBILE-1', 'MOBILE_BANKING'),
+                                                                                 ('col-2', 'C2-A-CASH',     'CASH'),
+                                                                                 ('col-2', 'C2-A-MOBILE-1', 'MOBILE_BANKING'),
+                                                                                 ('col-3', 'C3-A-CASH',     'CASH');
+
+-- ============================================================
+-- Payments (member_payment)
+-- ============================================================
+INSERT INTO member_payment (id, member_id, amount, payment_mode, account_credited_id, creation_date) VALUES
+                                                                                                         ('pay-col1-m1', 'C1-M1', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m2', 'C1-M2', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m3', 'C1-M3', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m4', 'C1-M4', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m5', 'C1-M5', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m6', 'C1-M6', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m7', 'C1-M7',  60000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m8', 'C1-M8',  90000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+
+                                                                                                         ('pay-col2-m1', 'C1-M1',  60000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m2', 'C1-M2',  90000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m3', 'C1-M3', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m4', 'C1-M4', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m5', 'C1-M5', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m6', 'C1-M6', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m7', 'C1-M7',  40000, 'MOBILE_BANKING', 'C2-A-MOBILE-1', '2026-01-01'),
+                                                                                                         ('pay-col2-m8', 'C1-M8',  60000, 'MOBILE_BANKING', 'C2-A-MOBILE-1', '2026-01-01');
+
+-- ============================================================
+-- Transactions (collectivity_transaction)
+-- ============================================================
+INSERT INTO collectivity_transaction
+(id, collectivity_id, creation_date, amount, payment_mode, account_credited_id, member_debited_id)
+VALUES
+    ('txn-col1-m1', 'col-1', '2026-01-01', 100000, 'CASH', 'C1-A-CASH', 'C1-M1'),
+    ('txn-col1-m2', 'col-1', '2026-01-01', 100000, 'CASH', 'C1-A-CASH', 'C1-M2'),
+    ('txn-col1-m3', 'col-1', '2026-01-01', 100000, 'CASH', 'C1-A-CASH', 'C1-M3'),
+    ('txn-col1-m4', 'col-1', '2026-01-01', 100000, 'CASH', 'C1-A-CASH', 'C1-M4'),
+    ('txn-col1-m5', 'col-1', '2026-01-01', 100000, 'CASH', 'C1-A-CASH', 'C1-M5'),
+    ('txn-col1-m6', 'col-1', '2026-01-01', 100000, 'CASH', 'C1-A-CASH', 'C1-M6'),
+    ('txn-col1-m7', 'col-1', '2026-01-01',  60000, 'CASH', 'C1-A-CASH', 'C1-M7'),
+    ('txn-col1-m8', 'col-1', '2026-01-01',  90000, 'CASH', 'C1-A-CASH', 'C1-M8'),
+
+    ('txn-col2-m1', 'col-2', '2026-01-01',  60000, 'CASH',           'C2-A-CASH',     'C1-M1'),
+    ('txn-col2-m2', 'col-2', '2026-01-01',  90000, 'CASH',           'C2-A-CASH',     'C1-M2'),
+    ('txn-col2-m3', 'col-2', '2026-01-01', 100000, 'CASH',           'C2-A-CASH',     'C1-M3'),
+    ('txn-col2-m4', 'col-2', '2026-01-01', 100000, 'CASH',           'C2-A-CASH',     'C1-M4'),
+    ('txn-col2-m5', 'col-2', '2026-01-01', 100000, 'CASH',           'C2-A-CASH',     'C1-M5'),
+    ('txn-col2-m6', 'col-2', '2026-01-01', 100000, 'CASH',           'C2-A-CASH',     'C1-M6'),
+    ('txn-col2-m7', 'col-2', '2026-01-01',  40000, 'MOBILE_BANKING', 'C2-A-MOBILE-1', 'C1-M7'),
+    ('txn-col2-m8', 'col-2', '2026-01-01',  60000, 'MOBILE_BANKING', 'C2-A-MOBILE-1', 'C1-M8');
+
+-- ============================================================
+-- Sync account balances to match seeded transactions
+-- col-1 cash:     100000×6 + 60000 + 90000 = 750000
+-- col-2 cash:     60000+90000+100000×4     = 550000
+-- col-2 mobile:   40000+60000              = 100000
+-- ============================================================
+UPDATE cash_account           SET amount = 750000 WHERE id = 'C1-A-CASH';
+UPDATE cash_account           SET amount = 550000 WHERE id = 'C2-A-CASH';
+UPDATE mobile_banking_account SET amount = 100000 WHERE id = 'C2-A-MOBILE-1';

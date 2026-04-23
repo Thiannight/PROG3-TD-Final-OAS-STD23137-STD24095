@@ -110,6 +110,8 @@ public class MemberService {
         member.setMembershipDate(LocalDate.now());
         member.setCollectivityId(targetCollectivity);
         member.setReferees(referees);
+        member.setRegistrationFeePaid(req.isRegistrationFeePaid());
+        member.setMembershipDuesPaid(req.isMembershipDuesPaid());
 
         memberRepository.save(member);
 
