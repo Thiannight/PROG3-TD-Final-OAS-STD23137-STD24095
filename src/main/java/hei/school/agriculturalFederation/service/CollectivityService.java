@@ -22,6 +22,12 @@ public class CollectivityService {
         this.memberRepository = memberRepository;
     }
 
+    public Collectivity getById(String collectivityId) {
+        return collectivityRepository.findById(collectivityId)
+                .orElseThrow(() -> new NotFoundException(
+                        "Collectivity not found: " + collectivityId));
+    }
+
     public List<Collectivity> createCollectivities(List<CreateCollectivity> requests) {
         List<Collectivity> created = new ArrayList<>();
         for (CreateCollectivity req : requests) {

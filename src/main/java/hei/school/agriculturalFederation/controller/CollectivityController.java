@@ -2,6 +2,7 @@ package hei.school.agriculturalFederation.controller;
 
 import hei.school.agriculturalFederation.model.*;
 import hei.school.agriculturalFederation.service.CollectivityService;
+import hei.school.agriculturalFederation.service.FinancialAccountService;
 import hei.school.agriculturalFederation.service.MembershipFeeService;
 import hei.school.agriculturalFederation.service.TransactionService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,19 +19,28 @@ public class CollectivityController {
     private final CollectivityService collectivityService;
     private final MembershipFeeService membershipFeeService;
     private final TransactionService transactionService;
+    private final FinancialAccountService financialAccountService;
 
     public CollectivityController(CollectivityService collectivityService,
                                   MembershipFeeService membershipFeeService,
-                                  TransactionService transactionService) {
+                                  TransactionService transactionService,
+                                  FinancialAccountService financialAccountService) {
         this.collectivityService = collectivityService;
         this.membershipFeeService = membershipFeeService;
         this.transactionService = transactionService;
+        this.financialAccountService = financialAccountService;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public List<Collectivity> createCollectivities(@RequestBody List<CreateCollectivity> collectivities) {
         return collectivityService.createCollectivities(collectivities);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Collectivity getCollectivityById(@PathVariable String id) {
+        return collectivityService.getById(id);
     }
 
     @PutMapping("/{id}/informations")
@@ -62,5 +72,13 @@ public class CollectivityController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return transactionService.getTransactions(id, from, to);
+    }
+
+    @GetMapping("/{id}/financialAccounts")
+    @ResponseStatus(HttpStatus.OK)
+    public List<FinancialAccount> getFinancialAccounts(
+            @PathVariable String id,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate at) {
+        return financialAccountService.getAccountsByCollectivityIdAt(id, at);
     }
 }
