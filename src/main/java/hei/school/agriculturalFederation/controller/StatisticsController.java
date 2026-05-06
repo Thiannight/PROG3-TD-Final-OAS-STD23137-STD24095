@@ -23,6 +23,14 @@ public class StatisticsController {
         this.federationStatisticsService = federationStatisticsService;
     }
 
+    @GetMapping("/collectivites/statistics")
+    @ResponseStatus(HttpStatus.OK)
+    public List<CollectivityOverallStatistics> getFederationStatistics(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+        return federationStatisticsService.getOverallStatistics(from, to);
+    }
+
     @GetMapping("/collectivites/{id}/statistics")
     @ResponseStatus(HttpStatus.OK)
     public List<CollectivityLocalStatistics> getCollectivityStatistics(
@@ -30,13 +38,5 @@ public class StatisticsController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return collectivityStatisticsService.getLocalStatistics(id, from, to);
-    }
-
-    @GetMapping("/collectivites/statistics")
-    @ResponseStatus(HttpStatus.OK)
-    public List<CollectivityOverallStatistics> getFederationStatistics(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return federationStatisticsService.getOverallStatistics(from, to);
     }
 }
