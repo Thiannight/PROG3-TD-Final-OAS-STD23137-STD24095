@@ -21,10 +21,6 @@ public class MemberRepository {
         this.dataSourceConfig = dataSourceConfig;
     }
 
-    // ------------------------------------------------------------------
-    // Row mapping
-    // ------------------------------------------------------------------
-
     private Member mapRow(ResultSet rs) throws SQLException {
         Member m = new Member();
         m.setId(rs.getString("id"));
@@ -41,10 +37,6 @@ public class MemberRepository {
         m.setCollectivityId(rs.getString("collectivity_id"));
         return m;
     }
-
-    // ------------------------------------------------------------------
-    // Queries
-    // ------------------------------------------------------------------
 
     public Optional<Member> findById(String id) {
         Connection conn = dataSourceConfig.getConnection();
@@ -88,15 +80,7 @@ public class MemberRepository {
         return members;
     }
 
-    /**
-     * Returns all members that belong to the given collectivity.
-     * Uses the member_collectivity junction table so that members who
-     * participate in multiple collectivities (e.g. C1-M1 in both col-1
-     * and col-2) are correctly included for each.
-     * The occupation returned reflects their role IN that specific collectivity.
-     */
     public List<Member> findAllByCollectivityId(String collectivityId) {
-        // Join member_collectivity so we get the right occupation per collectivity
         String sql = """
                 SELECT m.*, mc.occupation AS col_occupation, mc.adhesion_date AS col_adhesion_date
                 FROM member m
@@ -110,7 +94,6 @@ public class MemberRepository {
             List<Member> members = new ArrayList<>();
             while (rs.next()) {
                 Member m = mapRow(rs);
-                // Override occupation and adhesion date with the collectivity-specific values
                 m.setOccupation(MemberOccupation.valueOf(rs.getString("col_occupation")));
                 m.setMembershipDate(rs.getObject("col_adhesion_date", LocalDate.class));
                 m.setCollectivityId(collectivityId);
@@ -142,10 +125,6 @@ public class MemberRepository {
         return referees;
     }
 
-    // ------------------------------------------------------------------
-    // Persistence
-    // ------------------------------------------------------------------
-
     public Member save(Member member) {
         String sql = """
                 INSERT INTO member
@@ -168,7 +147,6 @@ public class MemberRepository {
             ps.setString(10, member.getEmail());
             ps.setDate(11, Date.valueOf(member.getMembershipDate()));
             ps.setString(12, member.getOccupation().name());
-            // Use actual values from the member object instead of hardcoding true
             ps.setBoolean(13, member.isRegistrationFeePaid());
             ps.setBoolean(14, member.isMembershipDuesPaid());
             ps.executeUpdate();
@@ -178,7 +156,6 @@ public class MemberRepository {
             dataSourceConfig.closeConnection(conn);
         }
 
-        // Also insert into member_collectivity junction table
         saveMemberCollectivity(member.getId(), member.getCollectivityId(),
                 member.getOccupation(), member.getMembershipDate(), conn);
 

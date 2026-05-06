@@ -1,7 +1,8 @@
 package hei.school.agriculturalFederation.service;
 
 import hei.school.agriculturalFederation.exception.BadRequestException;
-import hei.school.agriculturalFederation.model.FederationCollectivityStat;
+import hei.school.agriculturalFederation.model.CollectivityInformation;
+import hei.school.agriculturalFederation.model.CollectivityOverallStatistics;
 import hei.school.agriculturalFederation.repository.StatisticsRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class FederationStatisticsService {
         this.statisticsRepository = statisticsRepository;
     }
 
-    public List<FederationCollectivityStat> getStatistics(LocalDate from, LocalDate to) {
+    public List<CollectivityOverallStatistics> getOverallStatistics(LocalDate from, LocalDate to) {
         if (from == null || to == null) {
             throw new BadRequestException("Query parameters 'from' and 'to' are mandatory.");
         }
@@ -27,23 +28,25 @@ public class FederationStatisticsService {
         }
 
         List<String> collectivityIds = statisticsRepository.getAllCollectivityIds();
-        List<FederationCollectivityStat> result = new ArrayList<>();
+        List<CollectivityOverallStatistics> result = new ArrayList<>();
 
         for (String collectivityId : collectivityIds) {
             long totalMembers = statisticsRepository.countTotalMembers(collectivityId);
             long upToDate = statisticsRepository.countUpToDateMembers(collectivityId, from, to);
             long newMembers = statisticsRepository.countNewMembers(collectivityId, from, to);
-            String name = statisticsRepository.getCollectivityName(collectivityId);
 
             double percentage = totalMembers > 0
-                    ? (double) upToDate / totalMembers * 100.0
+                    ? Math.round((double) upToDate / totalMembers * 10000.0) / 100.0
                     : 0.0;
 
-            FederationCollectivityStat stat = new FederationCollectivityStat();
-            stat.setCollectivityId(collectivityId);
-            stat.setCollectivityName(name);
-            stat.setUpToDateMembersPercentage(Math.round(percentage * 100.0) / 100.0);
-            stat.setNewMembersCount(newMembers);
+            CollectivityInformation info = new CollectivityInformation();
+            info.setName(statisticsRepository.getCollectivityName(collectivityId));
+            info.setNumber(statisticsRepository.getCollectivityNumber(collectivityId));
+
+            CollectivityOverallStatistics stat = new CollectivityOverallStatistics();
+            stat.setCollectivityInformation(info);
+            stat.setNewMembersNumber((int) newMembers);
+            stat.setOverallMemberCurrentDuePercentage(percentage);
             result.add(stat);
         }
 

@@ -1,7 +1,7 @@
 package hei.school.agriculturalFederation.controller;
 
-import hei.school.agriculturalFederation.model.CollectivityStatistics;
-import hei.school.agriculturalFederation.model.FederationCollectivityStat;
+import hei.school.agriculturalFederation.model.CollectivityLocalStatistics;
+import hei.school.agriculturalFederation.model.CollectivityOverallStatistics;
 import hei.school.agriculturalFederation.service.CollectivityStatisticsService;
 import hei.school.agriculturalFederation.service.FederationStatisticsService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,20 +23,20 @@ public class StatisticsController {
         this.federationStatisticsService = federationStatisticsService;
     }
 
-    @GetMapping("/collectivities/{id}/statistics")
+    @GetMapping("/collectivites/{id}/statistics")
     @ResponseStatus(HttpStatus.OK)
-    public CollectivityStatistics getCollectivityStatistics(
+    public List<CollectivityLocalStatistics> getCollectivityStatistics(
             @PathVariable String id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return collectivityStatisticsService.getStatistics(id, from, to);
+        return collectivityStatisticsService.getLocalStatistics(id, from, to);
     }
 
-    @GetMapping("/collectivities/statistics")
+    @GetMapping("/collectivites/statistics")
     @ResponseStatus(HttpStatus.OK)
-    public List<FederationCollectivityStat> getFederationStatistics(
+    public List<CollectivityOverallStatistics> getFederationStatistics(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return federationStatisticsService.getStatistics(from, to);
+        return federationStatisticsService.getOverallStatistics(from, to);
     }
 }

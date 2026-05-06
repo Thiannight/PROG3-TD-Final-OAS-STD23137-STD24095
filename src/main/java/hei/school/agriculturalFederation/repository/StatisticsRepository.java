@@ -101,6 +101,24 @@ public class StatisticsRepository {
         }
     }
 
+    public Integer getCollectivityNumber(String collectivityId) {
+        String sql = "SELECT number FROM collectivity WHERE id = ?";
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, collectivityId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String number = rs.getString("number");
+                return number != null ? Integer.parseInt(number) : null;
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error in getCollectivityNumber: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
+    }
+
     public long countNewMembers(String collectivityId, LocalDate from, LocalDate to) {
         String sql = """
                 SELECT COUNT(*)

@@ -2,9 +2,7 @@ package hei.school.agriculturalFederation.service;
 
 import hei.school.agriculturalFederation.exception.BadRequestException;
 import hei.school.agriculturalFederation.exception.NotFoundException;
-import hei.school.agriculturalFederation.model.CollectivityStatistics;
-import hei.school.agriculturalFederation.model.Member;
-import hei.school.agriculturalFederation.model.MemberPaymentStat;
+import hei.school.agriculturalFederation.model.*;
 import hei.school.agriculturalFederation.repository.CollectivityRepository;
 import hei.school.agriculturalFederation.repository.MemberRepository;
 import hei.school.agriculturalFederation.repository.StatisticsRepository;
@@ -30,7 +28,8 @@ public class CollectivityStatisticsService {
         this.memberRepository = memberRepository;
     }
 
-    public CollectivityStatistics getStatistics(String collectivityId, LocalDate from, LocalDate to) {
+    public List<CollectivityLocalStatistics> getLocalStatistics(String collectivityId,
+                                                                LocalDate from, LocalDate to) {
         if (!collectivityRepository.existsById(collectivityId)) {
             throw new NotFoundException("Collectivity not found: " + collectivityId);
         }
@@ -41,27 +40,33 @@ public class CollectivityStatisticsService {
             throw new BadRequestException("'from' date must not be after 'to' date.");
         }
 
-        Map<String, Double> paidByMember = statisticsRepository.getTotalPaidByMember(collectivityId, from, to);
+        Map<String, Double> paidByMember =
+                statisticsRepository.getTotalPaidByMember(collectivityId, from, to);
 
-        double expectedPerMember = statisticsRepository.getExpectedTotalFromActiveFees(collectivityId, from, to);
+        double expectedPerMember =
+                statisticsRepository.getExpectedTotalFromActiveFees(collectivityId, from, to);
 
         List<Member> members = memberRepository.findAllByCollectivityId(collectivityId);
 
-        List<MemberPaymentStat> memberStats = new ArrayList<>();
+        List<CollectivityLocalStatistics> result = new ArrayList<>();
         for (Member member : members) {
-            double paid = paidByMember.getOrDefault(member.getId(), 0.0);
-            double unpaid = Math.max(0, expectedPerMember - paid);
+            double earned = paidByMember.getOrDefault(member.getId(), 0.0);
+            double unpaid = Math.max(0, expectedPerMember - earned);
 
-            MemberPaymentStat stat = new MemberPaymentStat();
-            stat.setMember(member);
-            stat.setTotalPaid(paid);
-            stat.setTotalUnpaid(unpaid);
-            memberStats.add(stat);
+            MemberDescription desc = new MemberDescription();
+            desc.setId(member.getId());
+            desc.setFirstName(member.getFirstName());
+            desc.setLastName(member.getLastName());
+            desc.setEmail(member.getEmail());
+            desc.setOccupation(member.getOccupation());
+
+            CollectivityLocalStatistics stat = new CollectivityLocalStatistics();
+            stat.setMemberDescription(desc);
+            stat.setEarnedAmount(earned);
+            stat.setUnpaidAmount(unpaid);
+            result.add(stat);
         }
 
-        CollectivityStatistics statistics = new CollectivityStatistics();
-        statistics.setCollectivityId(collectivityId);
-        statistics.setMemberStats(memberStats);
-        return statistics;
+        return result;
     }
 }

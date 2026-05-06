@@ -76,7 +76,6 @@ public class MemberPaymentService {
         String collectivityId = financialAccountRepository
                 .findCollectivityIdByAccountId(account.getId());
         if (collectivityId == null) {
-            // Fallback: use the member's primary collectivity
             collectivityId = member.getCollectivityId();
         }
 
