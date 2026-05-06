@@ -1,9 +1,9 @@
 package hei.school.agriculturalFederation.controller;
 
-import hei.school.agriculturalFederation.model.CreateMember;
-import hei.school.agriculturalFederation.model.CreateMemberPayment;
-import hei.school.agriculturalFederation.model.Member;
-import hei.school.agriculturalFederation.model.MemberPayment;
+import hei.school.agriculturalFederation.model.requests.CreateMember;
+import hei.school.agriculturalFederation.model.requests.CreateMemberPayment;
+import hei.school.agriculturalFederation.model.entities.Member;
+import hei.school.agriculturalFederation.model.entities.MemberPayment;
 import hei.school.agriculturalFederation.service.MemberPaymentService;
 import hei.school.agriculturalFederation.service.MemberService;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,8 @@
 package hei.school.agriculturalFederation.service;
 
 import hei.school.agriculturalFederation.exception.BadRequestException;
-import hei.school.agriculturalFederation.model.CollectivityInformation;
-import hei.school.agriculturalFederation.model.CollectivityOverallStatistics;
+import hei.school.agriculturalFederation.model.entities.CollectivityInformation;
+import hei.school.agriculturalFederation.model.entities.CollectivityOverallStatistics;
 import hei.school.agriculturalFederation.repository.StatisticsRepository;
 import org.springframework.stereotype.Service;
 

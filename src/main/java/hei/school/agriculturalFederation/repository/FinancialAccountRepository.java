@@ -1,7 +1,12 @@
 package hei.school.agriculturalFederation.repository;
 
 import hei.school.agriculturalFederation.datasource.DataSourceConfig;
-import hei.school.agriculturalFederation.model.*;
+import hei.school.agriculturalFederation.model.entities.BankAccount;
+import hei.school.agriculturalFederation.model.entities.CashAccount;
+import hei.school.agriculturalFederation.model.entities.FinancialAccount;
+import hei.school.agriculturalFederation.model.entities.MobileBankingAccount;
+import hei.school.agriculturalFederation.model.enums.Bank;
+import hei.school.agriculturalFederation.model.enums.MobileBankingService;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;

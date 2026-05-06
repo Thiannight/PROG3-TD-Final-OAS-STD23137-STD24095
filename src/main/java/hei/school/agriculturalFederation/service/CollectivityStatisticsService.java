@@ -2,7 +2,9 @@ package hei.school.agriculturalFederation.service;
 
 import hei.school.agriculturalFederation.exception.BadRequestException;
 import hei.school.agriculturalFederation.exception.NotFoundException;
-import hei.school.agriculturalFederation.model.*;
+import hei.school.agriculturalFederation.model.entities.Member;
+import hei.school.agriculturalFederation.model.entities.MemberDescription;
+import hei.school.agriculturalFederation.model.entities.CollectivityLocalStatistics;
 import hei.school.agriculturalFederation.repository.CollectivityRepository;
 import hei.school.agriculturalFederation.repository.MemberRepository;
 import hei.school.agriculturalFederation.repository.StatisticsRepository;

@@ -2,7 +2,7 @@ package hei.school.agriculturalFederation.service;
 
 import hei.school.agriculturalFederation.exception.BadRequestException;
 import hei.school.agriculturalFederation.exception.NotFoundException;
-import hei.school.agriculturalFederation.model.CollectivityTransaction;
+import hei.school.agriculturalFederation.model.entities.CollectivityTransaction;
 import hei.school.agriculturalFederation.repository.CollectivityRepository;
 import hei.school.agriculturalFederation.repository.TransactionRepository;
 import org.springframework.stereotype.Service;

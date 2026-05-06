@@ -1,7 +1,8 @@
 package hei.school.agriculturalFederation.repository;
 
 import hei.school.agriculturalFederation.datasource.DataSourceConfig;
-import hei.school.agriculturalFederation.model.*;
+import hei.school.agriculturalFederation.model.entities.CollectivityTransaction;
+import hei.school.agriculturalFederation.model.enums.PaymentMode;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;

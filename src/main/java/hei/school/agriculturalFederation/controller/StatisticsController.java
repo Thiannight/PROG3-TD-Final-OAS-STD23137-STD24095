@@ -1,7 +1,7 @@
 package hei.school.agriculturalFederation.controller;
 
-import hei.school.agriculturalFederation.model.CollectivityLocalStatistics;
-import hei.school.agriculturalFederation.model.CollectivityOverallStatistics;
+import hei.school.agriculturalFederation.model.entities.CollectivityLocalStatistics;
+import hei.school.agriculturalFederation.model.entities.CollectivityOverallStatistics;
 import hei.school.agriculturalFederation.service.CollectivityStatisticsService;
 import hei.school.agriculturalFederation.service.FederationStatisticsService;
 import org.springframework.format.annotation.DateTimeFormat;

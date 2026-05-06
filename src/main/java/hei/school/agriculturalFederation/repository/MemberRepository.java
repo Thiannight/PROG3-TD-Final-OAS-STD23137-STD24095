@@ -1,9 +1,9 @@
 package hei.school.agriculturalFederation.repository;
 
 import hei.school.agriculturalFederation.datasource.DataSourceConfig;
-import hei.school.agriculturalFederation.model.Gender;
-import hei.school.agriculturalFederation.model.Member;
-import hei.school.agriculturalFederation.model.MemberOccupation;
+import hei.school.agriculturalFederation.model.enums.Gender;
+import hei.school.agriculturalFederation.model.entities.Member;
+import hei.school.agriculturalFederation.model.entities.MemberOccupation;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;

@@ -1,6 +1,8 @@
 package hei.school.agriculturalFederation.controller;
 
-import hei.school.agriculturalFederation.model.*;
+import hei.school.agriculturalFederation.model.entities.*;
+import hei.school.agriculturalFederation.model.requests.CreateCollectivity;
+import hei.school.agriculturalFederation.model.requests.CreateMembershipFee;
 import hei.school.agriculturalFederation.service.CollectivityService;
 import hei.school.agriculturalFederation.service.FinancialAccountService;
 import hei.school.agriculturalFederation.service.MembershipFeeService;
