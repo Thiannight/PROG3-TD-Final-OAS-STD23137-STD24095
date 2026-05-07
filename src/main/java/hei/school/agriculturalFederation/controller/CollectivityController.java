@@ -80,7 +80,10 @@ public class CollectivityController {
     @ResponseStatus(HttpStatus.OK)
     public List<FinancialAccount> getFinancialAccounts(
             @PathVariable String id,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate at) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate at) {
+        if (at == null) {
+            at = LocalDate.now();
+        }
         return financialAccountService.getAccountsByCollectivityIdAt(id, at);
     }
 }

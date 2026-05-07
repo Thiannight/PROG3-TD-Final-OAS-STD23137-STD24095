@@ -97,7 +97,7 @@ public class MemberRepository {
                 m.setOccupation(MemberOccupation.valueOf(rs.getString("col_occupation")));
                 m.setMembershipDate(rs.getObject("col_adhesion_date", LocalDate.class));
                 m.setCollectivityId(collectivityId);
-                m.setReferees(findRefereesByMemberId(m.getId(), conn));
+                m.setReferees(findRefereesByMemberIdNewConn(m.getId()));
                 members.add(m);
             }
             return members;
@@ -106,6 +106,28 @@ public class MemberRepository {
         } finally {
             dataSourceConfig.closeConnection(conn);
         }
+    }
+
+    private List<Member> findRefereesByMemberIdNewConn(String memberId) {
+        String sql = """
+                SELECT m.* FROM member m
+                JOIN sponsorship s ON s.sponsor_id = m.id
+                WHERE s.candidate_id = ?
+                """;
+        List<Member> referees = new ArrayList<>();
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, memberId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                referees.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error in findRefereesByMemberIdNewConn: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
+        return referees;
     }
 
     private List<Member> findRefereesByMemberId(String memberId, Connection conn) throws SQLException {

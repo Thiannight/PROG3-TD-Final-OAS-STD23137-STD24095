@@ -42,15 +42,13 @@ public class MemberService {
                     "The registration fee (50,000 Ar) has not been paid.");
         }
         if (!req.isMembershipDuesPaid()) {
-            throw new BadRequestException(
-                    "The mandatory annual membership dues have not been paid.");
-        }
-
-        long requiredDues = memberRepository.getCollectivityAnnualDues(req.getCollectivityIdentifier());
-        if (req.getMembershipDuesAmount() < requiredDues) {
-            throw new BadRequestException(
-                    "Insufficient annual dues payment. Required: " + requiredDues
-                            + " Ar, provided: " + req.getMembershipDuesAmount() + " Ar.");
+            long requiredDues = memberRepository.getCollectivityAnnualDues(req.getCollectivityIdentifier());
+            long providedAmount = req.getMembershipDuesAmount();
+            if (providedAmount < requiredDues) {
+                throw new BadRequestException(
+                        "Insufficient annual dues payment. Required: " + requiredDues
+                                + " Ar, provided: " + providedAmount + " Ar.");
+            }
         }
 
         List<String> refereeIds = req.getReferees();
