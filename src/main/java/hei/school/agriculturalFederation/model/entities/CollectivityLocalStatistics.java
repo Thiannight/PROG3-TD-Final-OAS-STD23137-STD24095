@@ -4,6 +4,7 @@ public class CollectivityLocalStatistics {
     private MemberDescription memberDescription;
     private double earnedAmount;
     private double unpaidAmount;
+    private double assiduityPercentage;
 
     public CollectivityLocalStatistics() {}
 
@@ -26,5 +27,12 @@ public class CollectivityLocalStatistics {
     }
     public void setUnpaidAmount(double unpaidAmount) {
         this.unpaidAmount = unpaidAmount;
+    }
+
+    public double getAssiduityPercentage() {
+        return assiduityPercentage;
+    }
+    public void setAssiduityPercentage(double assiduityPercentage) {
+        this.assiduityPercentage = assiduityPercentage;
     }
 }

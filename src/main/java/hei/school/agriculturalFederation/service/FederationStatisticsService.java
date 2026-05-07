@@ -32,12 +32,15 @@ public class FederationStatisticsService {
 
         for (String collectivityId : collectivityIds) {
             long totalMembers = statisticsRepository.countTotalMembers(collectivityId);
-            long upToDate = statisticsRepository.countUpToDateMembers(collectivityId, from, to);
-            long newMembers = statisticsRepository.countNewMembers(collectivityId, from, to);
+            long upToDate     = statisticsRepository.countUpToDateMembers(collectivityId, from, to);
+            long newMembers   = statisticsRepository.countNewMembers(collectivityId, from, to);
 
-            double percentage = totalMembers > 0
+            double duePercentage = totalMembers > 0
                     ? Math.round((double) upToDate / totalMembers * 10000.0) / 100.0
                     : 0.0;
+
+            double assiduityPercentage =
+                    statisticsRepository.getCollectivityAssiduityPercentage(collectivityId);
 
             CollectivityInformation info = new CollectivityInformation();
             info.setName(statisticsRepository.getCollectivityName(collectivityId));
@@ -46,7 +49,8 @@ public class FederationStatisticsService {
             CollectivityOverallStatistics stat = new CollectivityOverallStatistics();
             stat.setCollectivityInformation(info);
             stat.setNewMembersNumber((int) newMembers);
-            stat.setOverallMemberCurrentDuePercentage(percentage);
+            stat.setOverallMemberCurrentDuePercentage(duePercentage);
+            stat.setOverallMemberAssiduityPercentage(assiduityPercentage);
             result.add(stat);
         }
 

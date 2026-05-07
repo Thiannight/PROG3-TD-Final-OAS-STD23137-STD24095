@@ -191,4 +191,74 @@ public class StatisticsRepository {
             dataSourceConfig.closeConnection(conn);
         }
     }
+
+    public double getMemberAssiduityPercentage(String memberId, String collectivityId) {
+        String sql = """
+                SELECT
+                    COUNT(CASE WHEN aa.attendance_status = 'ATTENDED' THEN 1 END) AS attended,
+                    COUNT(CASE WHEN aa.attendance_status = 'MISSING'  THEN 1 END) AS missing
+                FROM activity_attendance aa
+                JOIN collectivity_activity ca ON ca.id = aa.activity_id
+                JOIN member_collectivity mc ON mc.member_id = aa.member_id
+                                           AND mc.collectivity_id = ca.collectivity_id
+                WHERE aa.member_id = ?
+                  AND ca.collectivity_id = ?
+                  AND aa.attendance_status IN ('ATTENDED', 'MISSING')
+                """;
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, memberId);
+            ps.setString(2, collectivityId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                long attended = rs.getLong("attended");
+                long missing  = rs.getLong("missing");
+                long total = attended + missing;
+                if (total == 0) return 100.0; // aucune activité confirmée → 100 %
+                return Math.round((double) attended / total * 10000.0) / 100.0;
+            }
+            return 100.0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error in getMemberAssiduityPercentage: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
+    }
+
+    public double getCollectivityAssiduityPercentage(String collectivityId) {
+        String sql = """
+                SELECT
+                    mc.member_id,
+                    COUNT(CASE WHEN aa.attendance_status = 'ATTENDED' THEN 1 END) AS attended,
+                    COUNT(CASE WHEN aa.attendance_status = 'MISSING'  THEN 1 END) AS missing
+                FROM member_collectivity mc
+                LEFT JOIN activity_attendance aa ON aa.member_id = mc.member_id
+                LEFT JOIN collectivity_activity ca ON ca.id = aa.activity_id
+                                                  AND ca.collectivity_id = mc.collectivity_id
+                                                  AND aa.attendance_status IN ('ATTENDED', 'MISSING')
+                WHERE mc.collectivity_id = ?
+                GROUP BY mc.member_id
+                """;
+        Connection conn = dataSourceConfig.getConnection();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, collectivityId);
+            ResultSet rs = ps.executeQuery();
+            double totalRate = 0.0;
+            int memberCount = 0;
+            while (rs.next()) {
+                long attended = rs.getLong("attended");
+                long missing  = rs.getLong("missing");
+                long total = attended + missing;
+                double rate = (total == 0) ? 100.0 : (double) attended / total * 100.0;
+                totalRate += rate;
+                memberCount++;
+            }
+            if (memberCount == 0) return 100.0;
+            return Math.round(totalRate / memberCount * 100.0) / 100.0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error in getCollectivityAssiduityPercentage: " + e.getMessage(), e);
+        } finally {
+            dataSourceConfig.closeConnection(conn);
+        }
+    }
 }

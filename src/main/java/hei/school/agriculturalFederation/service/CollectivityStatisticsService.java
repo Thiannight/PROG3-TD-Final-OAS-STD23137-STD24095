@@ -55,6 +55,9 @@ public class CollectivityStatisticsService {
             double earned = paidByMember.getOrDefault(member.getId(), 0.0);
             double unpaid = Math.max(0.0, expectedPerMember - earned);
 
+            double assiduity = statisticsRepository
+                    .getMemberAssiduityPercentage(member.getId(), collectivityId);
+
             MemberDescription desc = new MemberDescription();
             desc.setId(member.getId());
             desc.setFirstName(member.getFirstName());
@@ -66,6 +69,7 @@ public class CollectivityStatisticsService {
             stat.setMemberDescription(desc);
             stat.setEarnedAmount(earned);
             stat.setUnpaidAmount(unpaid);
+            stat.setAssiduityPercentage(assiduity);
             result.add(stat);
         }
 
