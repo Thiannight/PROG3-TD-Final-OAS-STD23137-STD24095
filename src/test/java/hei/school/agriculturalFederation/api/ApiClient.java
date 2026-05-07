@@ -7,6 +7,9 @@ import org.springframework.web.client.RestTemplate;
 
 public class ApiClient {
     private static final String BASE_URL = "http://localhost:8080";
+    private static final String API_KEY_HEADER = "x-api-key";
+    private static final String API_KEY_VALUE = "agri-secure-key";
+
     private final RestTemplate restTemplate;
     private final String baseUrl;
 
@@ -14,10 +17,6 @@ public class ApiClient {
         this.baseUrl = BASE_URL;
         this.restTemplate = new RestTemplate();
     }
-
-    // =========================
-    // 🔹 GET
-    // =========================
 
     public <T> T get(String path, Class<T> responseType) {
         return exchange(path, HttpMethod.GET, null, responseType);
@@ -27,10 +26,6 @@ public class ApiClient {
         return exchange(path, HttpMethod.GET, null, typeRef);
     }
 
-    // =========================
-    // 🔹 POST
-    // =========================
-
     public <T> T post(String path, Object body, Class<T> responseType) {
         return exchange(path, HttpMethod.POST, body, responseType);
     }
@@ -38,10 +33,6 @@ public class ApiClient {
     public <T> T post(String path, Object body, ParameterizedTypeReference<T> typeRef) {
         return exchange(path, HttpMethod.POST, body, typeRef);
     }
-
-    // =========================
-    // 🔹 PUT
-    // =========================
 
     public <T> T put(String path, Object body, Class<T> responseType) {
         return exchange(path, HttpMethod.PUT, body, responseType);
@@ -51,10 +42,6 @@ public class ApiClient {
         return exchange(path, HttpMethod.PUT, body, typeRef);
     }
 
-    // =========================
-    // 🔹 DELETE
-    // =========================
-
     public void delete(String path) {
         exchange(path, HttpMethod.DELETE, null, Void.class);
     }
@@ -63,15 +50,10 @@ public class ApiClient {
         return exchange(path, HttpMethod.DELETE, null, typeRef);
     }
 
-    // =========================
-    // 🔁 CORE METHODS
-    // =========================
-
     private <T> T exchange(String path,
                            HttpMethod method,
                            Object body,
                            Class<T> responseType) {
-
         try {
             ResponseEntity<T> response = restTemplate.exchange(
                     baseUrl + path,
@@ -80,7 +62,6 @@ public class ApiClient {
                     responseType
             );
             return response.getBody();
-
         } catch (HttpStatusCodeException e) {
             throw buildException(e);
         }
@@ -90,7 +71,6 @@ public class ApiClient {
                            HttpMethod method,
                            Object body,
                            ParameterizedTypeReference<T> typeRef) {
-
         try {
             ResponseEntity<T> response = restTemplate.exchange(
                     baseUrl + path,
@@ -99,19 +79,15 @@ public class ApiClient {
                     typeRef
             );
             return response.getBody();
-
         } catch (HttpStatusCodeException e) {
             throw buildException(e);
         }
     }
 
-    // =========================
-    // 🔧 HELPERS
-    // =========================
-
     private HttpEntity<?> buildEntity(Object body) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(API_KEY_HEADER, API_KEY_VALUE); // Ajout de la clé API sur chaque requête
         return new HttpEntity<>(body, headers);
     }
 
@@ -123,5 +99,3 @@ public class ApiClient {
         );
     }
 }
-
-
