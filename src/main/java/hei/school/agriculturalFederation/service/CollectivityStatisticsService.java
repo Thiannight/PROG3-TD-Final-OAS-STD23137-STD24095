@@ -53,7 +53,7 @@ public class CollectivityStatisticsService {
         List<CollectivityLocalStatistics> result = new ArrayList<>();
         for (Member member : members) {
             double earned = paidByMember.getOrDefault(member.getId(), 0.0);
-            double unpaid = Math.max(0, expectedPerMember - earned);
+            double unpaid = Math.max(0.0, expectedPerMember - earned);
 
             MemberDescription desc = new MemberDescription();
             desc.setId(member.getId());

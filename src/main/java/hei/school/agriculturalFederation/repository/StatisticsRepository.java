@@ -21,13 +21,12 @@ public class StatisticsRepository {
 
     public Map<String, Double> getTotalPaidByMember(String collectivityId, LocalDate from, LocalDate to) {
         String sql = """
-                SELECT mc.member_id, COALESCE(SUM(ct.amount), 0) AS total_paid
+                SELECT mc.member_id, COALESCE(SUM(mp.amount), 0) AS total_paid
                 FROM member_collectivity mc
-                LEFT JOIN collectivity_transaction ct
-                    ON ct.member_debited_id = mc.member_id
-                    AND ct.collectivity_id = mc.collectivity_id
-                    AND ct.creation_date >= ?
-                    AND ct.creation_date <= ?
+                LEFT JOIN member_payment mp
+                    ON mp.member_id = mc.member_id
+                    AND mp.creation_date >= ?
+                    AND mp.creation_date <= ?
                 WHERE mc.collectivity_id = ?
                 GROUP BY mc.member_id
                 """;
@@ -159,22 +158,22 @@ public class StatisticsRepository {
 
     public long countUpToDateMembers(String collectivityId, LocalDate from, LocalDate to) {
         double expectedAmount = getExpectedTotalFromActiveFees(collectivityId, from, to);
+
         if (expectedAmount <= 0) {
             return countTotalMembers(collectivityId);
         }
 
         String sql = """
                 SELECT COUNT(*) FROM (
-                    SELECT mc.member_id, COALESCE(SUM(ct.amount), 0) AS total_paid
+                    SELECT mc.member_id, COALESCE(SUM(mp.amount), 0) AS total_paid
                     FROM member_collectivity mc
-                    LEFT JOIN collectivity_transaction ct
-                        ON ct.member_debited_id = mc.member_id
-                        AND ct.collectivity_id = mc.collectivity_id
-                        AND ct.creation_date >= ?
-                        AND ct.creation_date <= ?
+                    LEFT JOIN member_payment mp
+                        ON mp.member_id = mc.member_id
+                        AND mp.creation_date >= ?
+                        AND mp.creation_date <= ?
                     WHERE mc.collectivity_id = ?
                     GROUP BY mc.member_id
-                    HAVING COALESCE(SUM(ct.amount), 0) >= ?
+                    HAVING COALESCE(SUM(mp.amount), 0) >= ?
                 ) AS up_to_date
                 """;
         Connection conn = dataSourceConfig.getConnection();

@@ -1,5 +1,6 @@
 package hei.school.agriculturalFederation.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hei.school.agriculturalFederation.model.enums.Gender;
 
 import java.time.LocalDate;
@@ -54,18 +55,22 @@ public class Member {
     public MemberOccupation getOccupation() { return occupation; }
     public void setOccupation(MemberOccupation occupation) { this.occupation = occupation; }
 
+    @JsonIgnore
     public LocalDate getMembershipDate() { return membershipDate; }
     public void setMembershipDate(LocalDate membershipDate) { this.membershipDate = membershipDate; }
 
+    @JsonIgnore
     public String getCollectivityId() { return collectivityId; }
     public void setCollectivityId(String collectivityId) { this.collectivityId = collectivityId; }
 
-    public List<Member> getReferees() { return referees; }
-    public void setReferees(List<Member> referees) { this.referees = referees; }
-
+    @JsonIgnore
     public boolean isRegistrationFeePaid() { return registrationFeePaid; }
     public void setRegistrationFeePaid(boolean registrationFeePaid) { this.registrationFeePaid = registrationFeePaid; }
 
+    @JsonIgnore
     public boolean isMembershipDuesPaid() { return membershipDuesPaid; }
     public void setMembershipDuesPaid(boolean membershipDuesPaid) { this.membershipDuesPaid = membershipDuesPaid; }
+
+    public List<Member> getReferees() { return referees; }
+    public void setReferees(List<Member> referees) { this.referees = referees; }
 }
