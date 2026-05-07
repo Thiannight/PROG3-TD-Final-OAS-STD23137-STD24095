@@ -1,13 +1,16 @@
-package hei.school.federationagricole;
+package hei.school.agriculturalFederation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TdFinalOasApplicationTests {
+class AgriculturalFederationApiApplicationTests {
 
     @Test
     void contextLoads() {
     }
 
 }
+
+
+
