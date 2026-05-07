@@ -15,9 +15,9 @@ import hei.school.agriculturalFederation.repository.CollectivityRepository;
 import hei.school.agriculturalFederation.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -89,6 +89,11 @@ public class AttendanceService {
         ActivityMemberAttendance attendance = new ActivityMemberAttendance();
         attendance.setId(UUID.randomUUID().toString());
         attendance.setAttendanceStatus(req.getAttendanceStatus());
+        attendance.setActivityDate(
+                activity.getExecutiveDate() != null
+                        ? activity.getExecutiveDate()
+                        : LocalDate.now()
+        );
 
         MemberDescription desc = new MemberDescription();
         desc.setId(member.getId());

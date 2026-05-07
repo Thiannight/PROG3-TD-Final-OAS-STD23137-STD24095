@@ -12,6 +12,7 @@ import hei.school.agriculturalFederation.repository.CollectivityRepository;
 import hei.school.agriculturalFederation.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -99,7 +100,11 @@ public class ActivityService {
                     .collect(Collectors.toList());
         }
 
-        attendanceRepository.initUndefinedForMembers(activity.getId(), concernedMemberIds);
+        LocalDate activityDate = req.getExecutiveDate() != null
+                ? req.getExecutiveDate()
+                : LocalDate.now();
+
+        attendanceRepository.initUndefinedForMembers(activity.getId(), concernedMemberIds, activityDate);
 
         return activity;
     }
