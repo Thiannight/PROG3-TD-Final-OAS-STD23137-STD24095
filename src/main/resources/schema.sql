@@ -131,3 +131,34 @@ CREATE TABLE collectivity_account (
     PRIMARY KEY (collectivity_id, account_id),
     FOREIGN KEY (collectivity_id) REFERENCES collectivity(id)
 );
+
+CREATE TYPE activity_type_enum AS ENUM ('MEETING', 'TRAINING', 'OTHER');
+CREATE TYPE attendance_status_enum AS ENUM ('MISSING', 'ATTENDED', 'UNDEFINED');
+CREATE TYPE day_of_week_enum AS ENUM ('MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU');
+
+CREATE TABLE collectivity_activity (
+    id                          VARCHAR(255) PRIMARY KEY,
+    collectivity_id             VARCHAR(255) NOT NULL,
+    label                       VARCHAR(255),
+    activity_type               activity_type_enum NOT NULL,
+    member_occupation_concerned TEXT,
+    recurrence_week_ordinal     INT,
+    recurrence_day_of_week      day_of_week_enum,
+    executive_date              DATE,
+    FOREIGN KEY (collectivity_id) REFERENCES collectivity(id),
+    CONSTRAINT chk_recurrence_or_date CHECK (
+    (recurrence_week_ordinal IS NOT NULL AND recurrence_day_of_week IS NOT NULL AND executive_date IS NULL)
+    OR
+    (recurrence_week_ordinal IS NULL AND recurrence_day_of_week IS NULL AND executive_date IS NOT NULL)
+    )
+);
+
+CREATE TABLE activity_attendance (
+    id                VARCHAR(255) PRIMARY KEY,
+    activity_id       VARCHAR(255) NOT NULL,
+    member_id         VARCHAR(255) NOT NULL,
+    attendance_status attendance_status_enum NOT NULL DEFAULT 'UNDEFINED',
+    UNIQUE (activity_id, member_id),
+    FOREIGN KEY (activity_id) REFERENCES collectivity_activity(id),
+    FOREIGN KEY (member_id)   REFERENCES member(id)
+);

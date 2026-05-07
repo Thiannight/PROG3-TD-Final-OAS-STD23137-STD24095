@@ -1,9 +1,11 @@
 package hei.school.agriculturalFederation.controller;
 
+import hei.school.agriculturalFederation.model.entities.Attendance;
 import hei.school.agriculturalFederation.model.requests.CreateMember;
 import hei.school.agriculturalFederation.model.requests.CreateMemberPayment;
 import hei.school.agriculturalFederation.model.entities.Member;
 import hei.school.agriculturalFederation.model.entities.MemberPayment;
+import hei.school.agriculturalFederation.service.AttendanceService;
 import hei.school.agriculturalFederation.service.MemberPaymentService;
 import hei.school.agriculturalFederation.service.MemberService;
 import org.springframework.http.HttpStatus;
@@ -17,11 +19,14 @@ public class MemberController {
 
     private final MemberService memberService;
     private final MemberPaymentService memberPaymentService;
+    private final AttendanceService attendanceService;
 
     public MemberController(MemberService memberService,
-                            MemberPaymentService memberPaymentService) {
+                            MemberPaymentService memberPaymentService,
+                            AttendanceService attendanceService) {
         this.memberService = memberService;
         this.memberPaymentService = memberPaymentService;
+        this.attendanceService = attendanceService;
     }
 
     @PostMapping
