@@ -179,14 +179,13 @@ public class MemberRepository {
         }
 
         saveMemberCollectivity(member.getId(), member.getCollectivityId(),
-                member.getOccupation(), member.getMembershipDate(), conn);
+                member.getOccupation(), member.getMembershipDate());
 
         return member;
     }
 
     private void saveMemberCollectivity(String memberId, String collectivityId,
-                                        MemberOccupation occupation, LocalDate adhesionDate,
-                                        Connection ignoredConn) {
+                                        MemberOccupation occupation, LocalDate adhesionDate) {
         String sql = """
                 INSERT INTO member_collectivity (member_id, collectivity_id, occupation, adhesion_date)
                 VALUES (?, ?, CAST(? AS occupation_enum), ?)

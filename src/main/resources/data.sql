@@ -2,9 +2,11 @@ INSERT INTO collectivity (id, number, name, location, agricultural_specialty, cr
                           federation_approval, annual_dues,
                           president_id, vice_president_id, treasurer_id, secretary_id)
 VALUES
-    ('col-1', '1', 'Mpanorina',      'Ambatondrazaka', 'Riziculture', '2022-01-15', TRUE, 200000, NULL, NULL, NULL, NULL),
-    ('col-2', '2', 'Dobo voalohany', 'Ambatondrazaka', 'Pisciculture','2022-01-15', TRUE, 200000, NULL, NULL, NULL, NULL),
-    ('col-3', '3', 'Tantely mamy',   'Brickaville',    'Apiculture',  '2022-01-15', TRUE, 100000, NULL, NULL, NULL, NULL);
+    -- FIX: annual_dues corrected to 100000 for col-1 and col-2 (was 200000)
+    -- Source: membership_fee table has cot-1 and cot-2 both at amount=100000
+    ('col-1', '1', 'Mpanorina',      'Ambatondrazaka', 'Riziculture', '2022-01-15', TRUE, 100000, NULL, NULL, NULL, NULL),
+    ('col-2', '2', 'Dobo voalohany', 'Ambatondrazaka', 'Pisciculture','2022-01-15', TRUE, 100000, NULL, NULL, NULL, NULL),
+    ('col-3', '3', 'Tantely mamy',   'Brickaville',    'Apiculture',  '2022-01-15', TRUE,  50000, NULL, NULL, NULL, NULL);
 
 INSERT INTO member (id, collectivity_id, first_name, last_name, birth_date, gender,
                     address, profession, phone_number, email,
@@ -36,53 +38,53 @@ UPDATE collectivity SET president_id='C3-M1', vice_president_id='C3-M2', treasur
 
 INSERT INTO member_collectivity (member_id, collectivity_id, occupation, adhesion_date) VALUES
 
-('C1-M1', 'col-1', 'PRESIDENT',      '2022-01-15'),
-('C1-M2', 'col-1', 'VICE_PRESIDENT', '2022-01-15'),
-('C1-M3', 'col-1', 'SECRETARY',      '2022-01-15'),
-('C1-M4', 'col-1', 'TREASURER',      '2022-01-15'),
-('C1-M5', 'col-1', 'SENIOR',         '2022-01-15'),
-('C1-M6', 'col-1', 'SENIOR',         '2022-01-15'),
-('C1-M7', 'col-1', 'SENIOR',         '2022-01-15'),
-('C1-M8', 'col-1', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C1-M1', 'col-1', 'PRESIDENT',      '2022-01-15'),
+                                                                                            ('C1-M2', 'col-1', 'VICE_PRESIDENT', '2022-01-15'),
+                                                                                            ('C1-M3', 'col-1', 'SECRETARY',      '2022-01-15'),
+                                                                                            ('C1-M4', 'col-1', 'TREASURER',      '2022-01-15'),
+                                                                                            ('C1-M5', 'col-1', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C1-M6', 'col-1', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C1-M7', 'col-1', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C1-M8', 'col-1', 'SENIOR',         '2022-01-15'),
 
-('C1-M1', 'col-2', 'SENIOR',         '2022-01-15'),
-('C1-M2', 'col-2', 'SENIOR',         '2022-01-15'),
-('C1-M3', 'col-2', 'SENIOR',         '2022-01-15'),
-('C1-M4', 'col-2', 'SENIOR',         '2022-01-15'),
-('C1-M5', 'col-2', 'PRESIDENT',      '2022-01-15'),
-('C1-M6', 'col-2', 'VICE_PRESIDENT', '2022-01-15'),
-('C1-M7', 'col-2', 'SECRETARY',      '2022-01-15'),
-('C1-M8', 'col-2', 'TREASURER',      '2022-01-15'),
+                                                                                            ('C1-M1', 'col-2', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C1-M2', 'col-2', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C1-M3', 'col-2', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C1-M4', 'col-2', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C1-M5', 'col-2', 'PRESIDENT',      '2022-01-15'),
+                                                                                            ('C1-M6', 'col-2', 'VICE_PRESIDENT', '2022-01-15'),
+                                                                                            ('C1-M7', 'col-2', 'SECRETARY',      '2022-01-15'),
+                                                                                            ('C1-M8', 'col-2', 'TREASURER',      '2022-01-15'),
 
-('C3-M1', 'col-3', 'PRESIDENT',      '2022-01-15'),
-('C3-M2', 'col-3', 'VICE_PRESIDENT', '2022-01-15'),
-('C3-M3', 'col-3', 'SECRETARY',      '2022-01-15'),
-('C3-M4', 'col-3', 'TREASURER',      '2022-01-15'),
-('C3-M5', 'col-3', 'SENIOR',         '2022-01-15'),
-('C3-M6', 'col-3', 'SENIOR',         '2022-01-15'),
-('C3-M7', 'col-3', 'SENIOR',         '2022-01-15'),
-('C3-M8', 'col-3', 'SENIOR',         '2022-01-15');
+                                                                                            ('C3-M1', 'col-3', 'PRESIDENT',      '2022-01-15'),
+                                                                                            ('C3-M2', 'col-3', 'VICE_PRESIDENT', '2022-01-15'),
+                                                                                            ('C3-M3', 'col-3', 'SECRETARY',      '2022-01-15'),
+                                                                                            ('C3-M4', 'col-3', 'TREASURER',      '2022-01-15'),
+                                                                                            ('C3-M5', 'col-3', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C3-M6', 'col-3', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C3-M7', 'col-3', 'SENIOR',         '2022-01-15'),
+                                                                                            ('C3-M8', 'col-3', 'SENIOR',         '2022-01-15');
 
 
 INSERT INTO sponsorship (candidate_id, sponsor_id, relationship_nature) VALUES
-    ('C1-M3', 'C1-M1', 'Non précisé'), ('C1-M3', 'C1-M2', 'Non précisé'),
-    ('C1-M4', 'C1-M1', 'Non précisé'), ('C1-M4', 'C1-M2', 'Non précisé'),
-    ('C1-M5', 'C1-M1', 'Non précisé'), ('C1-M5', 'C1-M2', 'Non précisé'),
-    ('C1-M6', 'C1-M1', 'Non précisé'), ('C1-M6', 'C1-M2', 'Non précisé'),
-    ('C1-M7', 'C1-M1', 'Non précisé'), ('C1-M7', 'C1-M2', 'Non précisé'),
-    ('C1-M8', 'C1-M6', 'Non précisé'), ('C1-M8', 'C1-M7', 'Non précisé'),
-    ('C3-M3', 'C3-M1', 'Non précisé'), ('C3-M3', 'C3-M2', 'Non précisé'),
-    ('C3-M4', 'C3-M1', 'Non précisé'), ('C3-M4', 'C3-M2', 'Non précisé'),
-    ('C3-M5', 'C3-M1', 'Non précisé'), ('C3-M5', 'C3-M2', 'Non précisé'),
-    ('C3-M6', 'C3-M1', 'Non précisé'), ('C3-M6', 'C3-M2', 'Non précisé'),
-    ('C3-M7', 'C3-M1', 'Non précisé'), ('C3-M7', 'C3-M2', 'Non précisé'),
-    ('C3-M8', 'C3-M1', 'Non précisé'), ('C3-M8', 'C3-M2', 'Non précisé');
+                                                                            ('C1-M3', 'C1-M1', 'Non précisé'), ('C1-M3', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M4', 'C1-M1', 'Non précisé'), ('C1-M4', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M5', 'C1-M1', 'Non précisé'), ('C1-M5', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M6', 'C1-M1', 'Non précisé'), ('C1-M6', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M7', 'C1-M1', 'Non précisé'), ('C1-M7', 'C1-M2', 'Non précisé'),
+                                                                            ('C1-M8', 'C1-M6', 'Non précisé'), ('C1-M8', 'C1-M7', 'Non précisé'),
+                                                                            ('C3-M3', 'C3-M1', 'Non précisé'), ('C3-M3', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M4', 'C3-M1', 'Non précisé'), ('C3-M4', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M5', 'C3-M1', 'Non précisé'), ('C3-M5', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M6', 'C3-M1', 'Non précisé'), ('C3-M6', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M7', 'C3-M1', 'Non précisé'), ('C3-M7', 'C3-M2', 'Non précisé'),
+                                                                            ('C3-M8', 'C3-M1', 'Non précisé'), ('C3-M8', 'C3-M2', 'Non précisé');
 
 
 INSERT INTO membership_fee (id, collectivity_id, eligible_from, frequency, amount, label, status) VALUES
-    ('cot-1', 'col-1', '2026-01-01', 'ANNUALLY', 100000, 'Cotisation annuelle', 'ACTIVE'),
-    ('cot-2', 'col-2', '2026-01-01', 'ANNUALLY', 100000, 'Cotisation annuelle', 'ACTIVE'),
-    ('cot-3', 'col-3', '2026-01-01', 'ANNUALLY',  50000, 'Cotisation annuelle', 'ACTIVE');
+                                                                                                      ('cot-1', 'col-1', '2026-01-01', 'ANNUALLY', 100000, 'Cotisation annuelle', 'ACTIVE'),
+                                                                                                      ('cot-2', 'col-2', '2026-01-01', 'ANNUALLY', 100000, 'Cotisation annuelle', 'ACTIVE'),
+                                                                                                      ('cot-3', 'col-3', '2026-01-01', 'ANNUALLY',  50000, 'Cotisation annuelle', 'ACTIVE');
 
 
 INSERT INTO cash_account (id, amount) VALUES
@@ -91,35 +93,35 @@ INSERT INTO cash_account (id, amount) VALUES
                                           ('C3-A-CASH', 0);
 
 INSERT INTO mobile_banking_account (id, holder_name, mobile_banking_service, mobile_number, amount) VALUES
-    ('C1-A-MOBILE-1', 'Mpanorina',      'ORANGE_MONEY', 370489612, 0),
-    ('C2-A-MOBILE-1', 'Dobo voalohany', 'ORANGE_MONEY', 320489612, 0);
+                                                                                                        ('C1-A-MOBILE-1', 'Mpanorina',      'ORANGE_MONEY', 370489612, 0),
+                                                                                                        ('C2-A-MOBILE-1', 'Dobo voalohany', 'ORANGE_MONEY', 320489612, 0);
 
 INSERT INTO collectivity_account (collectivity_id, account_id, account_type) VALUES
-    ('col-1', 'C1-A-CASH',     'CASH'),
-    ('col-1', 'C1-A-MOBILE-1', 'MOBILE_BANKING'),
-    ('col-2', 'C2-A-CASH',     'CASH'),
-    ('col-2', 'C2-A-MOBILE-1', 'MOBILE_BANKING'),
-    ('col-3', 'C3-A-CASH',     'CASH');
+                                                                                 ('col-1', 'C1-A-CASH',     'CASH'),
+                                                                                 ('col-1', 'C1-A-MOBILE-1', 'MOBILE_BANKING'),
+                                                                                 ('col-2', 'C2-A-CASH',     'CASH'),
+                                                                                 ('col-2', 'C2-A-MOBILE-1', 'MOBILE_BANKING'),
+                                                                                 ('col-3', 'C3-A-CASH',     'CASH');
 
 
 INSERT INTO member_payment (id, member_id, amount, payment_mode, account_credited_id, creation_date) VALUES
-    ('pay-col1-m1', 'C1-M1', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
-    ('pay-col1-m2', 'C1-M2', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
-    ('pay-col1-m3', 'C1-M3', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
-    ('pay-col1-m4', 'C1-M4', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
-    ('pay-col1-m5', 'C1-M5', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
-    ('pay-col1-m6', 'C1-M6', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
-    ('pay-col1-m7', 'C1-M7',  60000, 'CASH', 'C1-A-CASH', '2026-01-01'),
-    ('pay-col1-m8', 'C1-M8',  90000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m1', 'C1-M1', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m2', 'C1-M2', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m3', 'C1-M3', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m4', 'C1-M4', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m5', 'C1-M5', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m6', 'C1-M6', 100000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m7', 'C1-M7',  60000, 'CASH', 'C1-A-CASH', '2026-01-01'),
+                                                                                                         ('pay-col1-m8', 'C1-M8',  90000, 'CASH', 'C1-A-CASH', '2026-01-01'),
 
-    ('pay-col2-m1', 'C1-M1',  60000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
-    ('pay-col2-m2', 'C1-M2',  90000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
-    ('pay-col2-m3', 'C1-M3', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
-    ('pay-col2-m4', 'C1-M4', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
-    ('pay-col2-m5', 'C1-M5', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
-    ('pay-col2-m6', 'C1-M6', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
-    ('pay-col2-m7', 'C1-M7',  40000, 'MOBILE_BANKING', 'C2-A-MOBILE-1', '2026-01-01'),
-    ('pay-col2-m8', 'C1-M8',  60000, 'MOBILE_BANKING', 'C2-A-MOBILE-1', '2026-01-01');
+                                                                                                         ('pay-col2-m1', 'C1-M1',  60000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m2', 'C1-M2',  90000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m3', 'C1-M3', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m4', 'C1-M4', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m5', 'C1-M5', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m6', 'C1-M6', 100000, 'CASH',           'C2-A-CASH',     '2026-01-01'),
+                                                                                                         ('pay-col2-m7', 'C1-M7',  40000, 'MOBILE_BANKING', 'C2-A-MOBILE-1', '2026-01-01'),
+                                                                                                         ('pay-col2-m8', 'C1-M8',  60000, 'MOBILE_BANKING', 'C2-A-MOBILE-1', '2026-01-01');
 
 
 INSERT INTO collectivity_transaction

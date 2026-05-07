@@ -11,8 +11,8 @@ public class SecurityConfig {
     public FilterRegistrationBean<ApiKeyFilter> apiKeyFilterRegistration(ApiKeyFilter apiKeyFilter) {
         FilterRegistrationBean<ApiKeyFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(apiKeyFilter);
-        registration.addUrlPatterns("/*"); // Protège tous les endpoints
-        registration.setOrder(1);          // Priorité maximale
+        registration.addUrlPatterns("/*");
+        registration.setOrder(1);
         return registration;
     }
 }

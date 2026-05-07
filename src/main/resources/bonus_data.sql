@@ -19,7 +19,8 @@ INSERT INTO collectivity_activity (id, collectivity_id, label, activity_type, me
 VALUES ('act-3', 'col-2', 'AG2', 'MEETING', 'JUNIOR,SENIOR,SECRETARY,TREASURER,VICE_PRESIDENT,PRESIDENT', 1, 'SU',
         NULL),
        ('act-4', 'col-2', 'Formation de base', 'TRAINING', 'JUNIOR', 3, 'SU', NULL),
-       ('act-5', 'col-2', 'Perfectionnement', 'PUNCTUAL', 'SENIOR', NULL, NULL, '3036-04-30');
+       -- FIX #5: corrected typo year 3036 → 2026 (source PDF clearly states 30/04/2026)
+       ('act-5', 'col-2', 'Perfectionnement', 'PUNCTUAL', 'SENIOR', NULL, NULL, '2026-04-30');
 
 -- Collectivité 3
 INSERT INTO collectivity_activity (id, collectivity_id, label, activity_type, member_occupation_concerned,

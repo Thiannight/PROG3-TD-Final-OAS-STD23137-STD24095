@@ -1,16 +1,23 @@
 CREATE TYPE gender_enum AS ENUM ('MALE', 'FEMALE');
 CREATE TYPE occupation_enum AS ENUM ('JUNIOR', 'SENIOR', 'SECRETARY', 'TREASURER', 'VICE_PRESIDENT', 'PRESIDENT');
 
+-- FIX: added missing columns agricultural_specialty, creation_date, federation_approval, annual_dues
+-- These are used by the application (getCollectivityAnnualDues, CollectivityRepository.save, etc.)
+-- and referenced in data.sql — their absence caused every collectivity INSERT to fail.
 CREATE TABLE collectivity
 (
-    id                VARCHAR(255) PRIMARY KEY,
-    number            VARCHAR(255) UNIQUE,
-    name              VARCHAR(255),
-    location          VARCHAR(255),
-    president_id      VARCHAR(255),
-    vice_president_id VARCHAR(255),
-    treasurer_id      VARCHAR(255),
-    secretary_id      VARCHAR(255)
+    id                     VARCHAR(255) PRIMARY KEY,
+    number                 VARCHAR(255) UNIQUE,
+    name                   VARCHAR(255),
+    location               VARCHAR(255),
+    agricultural_specialty VARCHAR(255),
+    creation_date          DATE,
+    federation_approval    BOOLEAN      NOT NULL DEFAULT FALSE,
+    annual_dues            BIGINT       NOT NULL DEFAULT 0,
+    president_id           VARCHAR(255),
+    vice_president_id      VARCHAR(255),
+    treasurer_id           VARCHAR(255),
+    secretary_id           VARCHAR(255)
 );
 
 CREATE TABLE member

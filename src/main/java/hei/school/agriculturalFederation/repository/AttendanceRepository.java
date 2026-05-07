@@ -8,6 +8,7 @@ import hei.school.agriculturalFederation.model.enums.AttendanceStatus;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -105,8 +106,8 @@ public class AttendanceRepository {
             attendance.setId(existing.get().getId());
         } else {
             String sql = """
-                    INSERT INTO activity_attendance (id, activity_id, member_id, attendance_status)
-                    VALUES (?, ?, ?, CAST(? AS attendance_status_enum))
+                    INSERT INTO activity_attendance (id, activity_id, member_id, attendance_status, activity_date)
+                    VALUES (?, ?, ?, CAST(? AS attendance_status_enum), ?)
                     """;
             Connection conn = dataSourceConfig.getConnection();
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -114,6 +115,7 @@ public class AttendanceRepository {
                 ps.setString(2, activityId);
                 ps.setString(3, memberId);
                 ps.setString(4, attendance.getAttendanceStatus().name());
+                ps.setDate(5, Date.valueOf(attendance.getActivityDate()));
                 ps.executeUpdate();
             } catch (SQLException e) {
                 throw new RuntimeException("Error inserting attendance: " + e.getMessage(), e);
@@ -124,12 +126,12 @@ public class AttendanceRepository {
         return attendance;
     }
 
-    public void initUndefinedForMembers(String activityId, List<String> memberIds) {
+    public void initUndefinedForMembers(String activityId, List<String> memberIds, LocalDate activityDate) {
         if (memberIds == null || memberIds.isEmpty()) return;
         String sql = """
-                INSERT INTO activity_attendance (id, activity_id, member_id, attendance_status)
-                VALUES (?, ?, ?, CAST('UNDEFINED' AS attendance_status_enum))
-                ON CONFLICT (activity_id, member_id) DO NOTHING
+                INSERT INTO activity_attendance (id, activity_id, member_id, attendance_status, activity_date)
+                VALUES (?, ?, ?, CAST('UNDEFINED' AS attendance_status_enum), ?)
+                ON CONFLICT (activity_id, member_id, activity_date) DO NOTHING
                 """;
         Connection conn = dataSourceConfig.getConnection();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -137,6 +139,7 @@ public class AttendanceRepository {
                 ps.setString(1, java.util.UUID.randomUUID().toString());
                 ps.setString(2, activityId);
                 ps.setString(3, memberId);
+                ps.setDate(4, Date.valueOf(activityDate));
                 ps.addBatch();
             }
             ps.executeBatch();

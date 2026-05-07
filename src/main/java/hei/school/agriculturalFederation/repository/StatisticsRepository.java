@@ -214,7 +214,7 @@ public class StatisticsRepository {
                 long attended = rs.getLong("attended");
                 long missing  = rs.getLong("missing");
                 long total = attended + missing;
-                if (total == 0) return 100.0; // aucune activité confirmée → 100 %
+                if (total == 0) return 100.0;
                 return Math.round((double) attended / total * 10000.0) / 100.0;
             }
             return 100.0;
@@ -235,8 +235,8 @@ public class StatisticsRepository {
                 LEFT JOIN activity_attendance aa ON aa.member_id = mc.member_id
                 LEFT JOIN collectivity_activity ca ON ca.id = aa.activity_id
                                                   AND ca.collectivity_id = mc.collectivity_id
-                                                  AND aa.attendance_status IN ('ATTENDED', 'MISSING')
                 WHERE mc.collectivity_id = ?
+                  AND (aa.attendance_status IN ('ATTENDED', 'MISSING') OR aa.attendance_status IS NULL)
                 GROUP BY mc.member_id
                 """;
         Connection conn = dataSourceConfig.getConnection();
